@@ -13,10 +13,11 @@ setup(
   classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Development Status :: 1 - Beta",
+    "Development Status :: 4 - Beta",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Topic :: Data File Processing",
+    "Topic :: Text Processing",
+    "Topic :: Utilities",
     "Topic :: Software Development :: Libraries :: Python Modules",
     ],
 )
