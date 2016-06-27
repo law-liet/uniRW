@@ -2,9 +2,11 @@
 # Author: Langxuan Su
 
 from __future__ import print_function
+import re
 from util import check_and_apply1, check_and_apply_2
 
-def read(file_name, mode, key_col, val_cols, split_char, header=False,
+
+def read(file_name, mode, key_col, val_cols, split_re, header=False,
          header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={}):
 
   lineno = 0
@@ -15,9 +17,9 @@ def read(file_name, mode, key_col, val_cols, split_char, header=False,
 
     for line in file:
       if line[0] in ignore_chars: continue
-      a = line[:-1].split(split_char)
-      # key = map_fs['key'](a[key_col]) if 'key' in map_fs else a[key_col]
-      key = check_and_apply1(map_fs, key, a[key_col])
+      #a = line[:-1].split(split_re)
+      a = re.split(split_re, line[:-1])
+      key = check_and_apply1(map_fs, 'key', a[key_col])
 
       if header: 
         if lineno == 0 and headers == {}:
@@ -30,16 +32,13 @@ def read(file_name, mode, key_col, val_cols, split_char, header=False,
 
         val_name = headers[val_col] if header else val_col
         if val_col == 'lineno':
-          # val = map_fs[val_col](lineno) if val_col in map_fs else lineno
           val = check_and_apply1(map_fs, val_col, lineno)
         else:
-          # val = map_fs[val_col]((a[val_col])) if val_col in map_fs else a[val_col]
           val = check_and_apply1(map_fs, val_col, a[val_col])
 
         if key in key_val_dict:
           if val_name in key_val_dict[key]:
             current_val = key_val_dict[key][val_name]
-            # reduced_val = reduce_fs[val_col]((current_val, val)) if val_col in reduce_fs else val
             reduced_val = check_and_apply_2(reduce_fs, val_col, current_val, val)
             key_val_dict[key][val_name] = reduced_val
 
@@ -51,11 +50,12 @@ def read(file_name, mode, key_col, val_cols, split_char, header=False,
 
       lineno += 1
 
-  key_val_dict['lineno'] = lineno
+  key_val_dict['nline'] = lineno
+
   return key_val_dict
 
 
-def readAll(file_names, mode, key_col, val_cols, split_char, header=False,
+def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
             header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={},
             post_map_fs={}, post_reduce_fs={}):
 
@@ -68,35 +68,30 @@ def readAll(file_names, mode, key_col, val_cols, split_char, header=False,
                         mode=mode,
                         key_col=key_col,
                         val_cols=val_cols,
-                        split_char=split_char,
+                        split_re=split_re,
                         header=header,
                         header_dict=header_dict,
                         ignore_chars=ignore_chars,
                         map_fs=map_fs,
                         reduce_fs=reduce_fs)
 
-    nline = key_val_dict['lineno']
 
     for key, val_dict in key_val_dict.items():
 
-      if key == 'lineno': continue
+      if key == 'nline': continue
 
       # deal with lineno in the future
 
       if key in final_key_val_dict:
-        
+
+
         for val_name, raw_val in val_dict.items():
-          
-          #val = post_map_fs[val_name](raw_val, nline) if val_name in post_map_fs else raw_val
-          val = check_and_apply_2(post_map_fs, val_name, nline, raw_val)
+
+          val = check_and_apply_2(post_map_fs, val_name, key_val_dict, raw_val)
 
           if val_name in final_key_val_dict[key]:
             current_val = val_dict[val_name]
-            #reduced_val = \
-            #  post_reduce_fs[val_name](current_val, val) if val_name in post_reduce_fs else val
-            
-            reduced_val = check_and_apply_2(reduce_fs, val_name, current_val, val)
-
+            reduced_val = check_and_apply_2(post_reduce_fs, val_name, current_val, val)
             final_key_val_dict[key][val_name] = reduced_val
           else:
             final_key_val_dict[key][val_name] = val
@@ -105,8 +100,7 @@ def readAll(file_names, mode, key_col, val_cols, split_char, header=False,
         final_key_val_dict[key] = {}
         
         for val_name, raw_val in val_dict.items():
-          # val = post_map_fs[val_name](raw_val, nline) if val_name in post_map_fs else raw_val
-          val = check_and_apply_2(post_map_fs, val_name, nline, raw_val)
+          val = check_and_apply_2(post_map_fs, val_name, key_val_dict, raw_val)
           final_key_val_dict[key][val_name] = val
 
 #    lineno += nline
@@ -114,14 +108,19 @@ def readAll(file_names, mode, key_col, val_cols, split_char, header=False,
   return final_key_val_dict
 
 def write(file_name, mode, key_val_dict, col_names,
-          header, split_char, foreword='', end_char='\n'):
+          header, split_char, sort_by=None, foreword='', end_char='\n', epilogue=''):
 
   output = open(file_name, mode)
   header_line = split_char.join(header)
   if foreword != '': print(foreword, file=output)
   print(header_line, file=output)
 
-  for key, val_dict in key_val_dict.items():
+  if sort_by==None:
+    sorted_items = sorted(key_val_dict.items())
+  else:
+    sorted_items = sorted(key_val_dict.items(), key = lambda (k,v): v[sort_by])
+
+  for key, val_dict in sorted_items:
 
     line = ''
 
@@ -134,4 +133,5 @@ def write(file_name, mode, key_val_dict, col_names,
 
     print(line[:-1], file=output, end=end_char)
 
+  if foreword != '': print(epilogue, file=output)
   output.close()
