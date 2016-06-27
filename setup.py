@@ -8,7 +8,7 @@ setup(
   author = 'Langxuan Su',
   author_email = 'lawliet@orion.codes',
   url = 'https://github.com/law-liet/uniRW',
-  download_url = 'https://github.com/law-liet/uniRW/tarball/0.1',
+  download_url = 'https://github.com/law-liet/uniRW/tarball/v0.1',
   keywords = ['universal', 'reader', 'writer', 'map', 'reduce'],
   classifiers = [
     "Programming Language :: Python",
