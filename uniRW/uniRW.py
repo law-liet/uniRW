@@ -3,7 +3,7 @@
 
 from __future__ import print_function
 import re
-from .util import check_and_apply_2
+from .util import check_and_apply_f, check_and_apply_2
 import sys
 
 def read(file_name, mode, key_col, val_cols, split_re, header=False,
@@ -20,7 +20,10 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
     for line in file:
       if line[0] in ignore_chars: continue
       a = re.split(split_re, line[:-1])
-      key = check_and_apply_2(map_fs, 'key', current_states, a[key_col])
+      if key_col == None:
+        key = check_and_apply_2(map_fs, 'key', current_states, lineno)
+      else:
+        key = check_and_apply_2(map_fs, 'key', current_states, a[key_col])
 
       if header:
         if lineno == 0 and headers == {}:
@@ -68,18 +71,18 @@ def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
 
   for file_name in file_names:
 
-    key_val_dict, final_states = read(file_name=file_name,
-                                mode=mode,
-                                key_col=key_col,
-                                val_cols=val_cols,
-                                split_re=split_re,
-                                header=header,
-                                header_dict=header_dict,
-                                ignore_chars=ignore_chars,
-                                map_fs=map_fs,
-                                reduce_fs=reduce_fs,
-                                states = states,
-                                update_state = update_state)
+    key_val_dict, final_states = read(file_name= file_name,
+                                      mode= mode,
+                                      key_col= key_col,
+                                      val_cols= val_cols,
+                                      split_re= split_re,
+                                      header= header,
+                                      header_dict= header_dict,
+                                      ignore_chars = ignore_chars,
+                                      map_fs= map_fs,
+                                      reduce_fs= reduce_fs,
+                                      states= states,
+                                      update_state= update_state)
 
     for key, val_dict in key_val_dict.items():
 
@@ -108,8 +111,8 @@ def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
 
   return final_key_val_dict
 
-def write(file_name, mode, key_val_dict, col_names,
-          header, split_char, sort_by=None, foreword='', end_char='\n', epilogue=''):
+def write(file_name, mode, key_val_dict, col_names, header, split_char,
+          to_string={}, sort_by=None, foreword='', end_char='\n', epilogue=''):
 
   output = open(file_name, mode)
   header_line = split_char.join(header)
@@ -119,7 +122,7 @@ def write(file_name, mode, key_val_dict, col_names,
   if sort_by==None:
     sorted_items = sorted(key_val_dict.items())
   else:
-    sorted_items = sorted(key_val_dict.items(), key = lambda (k,v): v[sort_by])
+    sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): v[sort_by])
 
   for key, val_dict in sorted_items:
 
@@ -127,9 +130,9 @@ def write(file_name, mode, key_val_dict, col_names,
 
     for col_name in col_names:
       if col_name=='key':
-        line += str(key)
+        line += check_and_apply_f(to_string, str, col_name, key)
       else:
-        line += str(val_dict[col_name])
+        line += check_and_apply_f(to_string, str, col_name, val_dict[col_name])
       line += split_char
 
     print(line[:-1], file=output, end=end_char)
