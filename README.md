@@ -12,13 +12,14 @@ A universal reader and writer package for stateful data file processing with bas
 - Writing:
     - Select key and values to write
     - Sort by key or value
-    - Self-defined toString methods
+    - Customize to_string methods
     
 ## To-do List:
 - Robust Error Message
 - Examples
-- Tests
+- Break down to unit tests
+- Customize comparation function for sorting
 
 ## Future Work:
-- Better Abstraction (OO style?)
+- Better Abstraction/Structure (OO style?)
 - Optimization

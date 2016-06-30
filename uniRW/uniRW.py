@@ -2,7 +2,7 @@
 # Author: Langxuan Su
 
 from __future__ import print_function
-import re
+from re import split as resplit
 from .util import check_and_apply_f, check_and_apply_2
 import sys
 
@@ -19,7 +19,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
 
     for line in file:
       if line[0] in ignore_chars: continue
-      a = re.split(split_re, line[:-1])
+      a = resplit(split_re, line[:-1])
       if key_col == None:
         key = check_and_apply_2(map_fs, 'key', current_states, lineno)
       else:
@@ -32,7 +32,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
             headers[val_col] = a[val_col]
           continue
 
-      current_states = update_state(current_states, a) if update_state != None else current_states
+      if update_state != None: update_state(current_states, a)
 
       for val_col in val_cols:
 
@@ -41,7 +41,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
           if val_col in current_states:
             val = check_and_apply_2(map_fs, val_col, current_states, current_states[val_col])
           else:
-            print('Error: ' + val_col+' not '+'in states', file=sys.stderr)
+            print('Error:' + val_col + ' not ' + 'in states', file=sys.stderr)
             sys.exit()
         else:
           val = check_and_apply_2(map_fs, val_col, current_states, a[val_col])
@@ -78,7 +78,7 @@ def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
                                       split_re= split_re,
                                       header= header,
                                       header_dict= header_dict,
-                                      ignore_chars = ignore_chars,
+                                      ignore_chars= ignore_chars,
                                       map_fs= map_fs,
                                       reduce_fs= reduce_fs,
                                       states= states,
@@ -122,7 +122,7 @@ def write(file_name, mode, key_val_dict, col_names, header, split_char,
   if sort_by==None:
     sorted_items = sorted(key_val_dict.items())
   else:
-    sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): v[sort_by])
+    sorted_items = sorted(key_val_dict.items(), key = lambda (k,v): v[sort_by])
 
   for key, val_dict in sorted_items:
 
