@@ -1,5 +1,5 @@
 # uniRW
-A universal reader and writer package for stateful data file processing with basic map-reduce functionality.
+A universal reader and writer package for stateful data file processing with basic map/filter/reduce functionality.
 
 ## Current Features:
 - Reading:
@@ -19,6 +19,7 @@ A universal reader and writer package for stateful data file processing with bas
 - Examples
 - Break down to unit tests
 - Customize comparation function for sorting
+- Add type checker (Python 3.5 typing module + Mypy ?)
 
 ## Future Work:
 - Better Abstraction/Structure (OO style?)
