@@ -3,13 +3,13 @@ from distutils.core import setup
 setup(
   name = 'uniRW',
   packages = ['uniRW'],
-  version = '0.1.0',
-  description = 'A universal reader and writer for data file processing',
+  version = '0.2.0',
+  description = 'A universal reader and writer for stateful data file processing',
   author = 'Langxuan Su',
   author_email = 'lawliet@orion.codes',
   url = 'https://github.com/law-liet/uniRW',
-  download_url = 'https://github.com/law-liet/uniRW/tarball/v0.1.0',
-  keywords = ['universal', 'reader', 'writer', 'map', 'reduce'],
+  download_url = 'https://github.com/law-liet/uniRW/tarball/v0.2.0',
+  keywords = ['universal', 'reader', 'writer',  'map', 'reduce'],
   classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",

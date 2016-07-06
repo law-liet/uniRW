@@ -6,7 +6,7 @@ from re import split as resplit
 from .util import check_and_apply_f, check_and_apply_2
 import sys
 
-def read(file_name, mode, key_col, val_cols, split_re, header=False,
+def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
          header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={},
          filter_f=None, state={}, update_state=None):
 
@@ -25,7 +25,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
       else:
         key = check_and_apply_2(map_fs, 'key', current_state, a[key_col])
 
-      if header:
+      if has_header:
         if lineno == 0:
           if headers == {}:
             headers[key_col] = a[key_col]
@@ -42,7 +42,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
 
       for val_col in val_cols:
 
-        val_name = headers[val_col] if header else val_col
+        val_name = headers[val_col] if has_header else val_col
         if type(val_col) is str:
           if val_col in current_state:
             val = check_and_apply_2(map_fs, val_col, current_state, current_state[val_col])
@@ -69,7 +69,7 @@ def read(file_name, mode, key_col, val_cols, split_re, header=False,
   return (key_val_dict, current_state)
 
 
-def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
+def readAll(file_names, mode, key_col, val_cols, split_re, has_header=False,
             header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={}, filter_f=None,
             state={}, update_state=None, post_map_fs={}, post_reduce_fs={}):
 
@@ -82,7 +82,7 @@ def readAll(file_names, mode, key_col, val_cols, split_re, header=False,
                                      key_col= key_col,
                                      val_cols= val_cols,
                                      split_re= split_re,
-                                     header= header,
+                                     has_header= has_header,
                                      header_dict= header_dict,
                                      ignore_chars= ignore_chars,
                                      map_fs= map_fs,
