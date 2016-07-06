@@ -1,5 +1,6 @@
 # install uniRW by running: pip install uniRW
 # simple data processing for one file
+# run this file: python example1.py
 
 import uniRW as RW
 
@@ -42,7 +43,6 @@ def percentile_grade():
                                 key_col= 0,
                                 val_cols= ['rank',1],
                                 has_header= True,
-                                header_dict= {'rank': 'rank', 1: 'Grade'},
                                 split_re= ',',
                                 state= {'rank': 0},
                                 update_state= update)
