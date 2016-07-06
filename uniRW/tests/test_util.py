@@ -1,5 +1,5 @@
 import unittest
-from uniRW.util import *
+from ..util import *
 
 class UtilTest(unittest.TestCase):
     pass
