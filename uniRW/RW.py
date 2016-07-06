@@ -42,7 +42,7 @@ def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
 
       for val_col in val_cols:
 
-        val_name = headers[val_col] if has_header else val_col
+        val_name = headers[val_col] if val_col in headers else val_col
         if type(val_col) is str:
           if val_col in current_state:
             val = check_and_apply_2(map_fs, val_col, current_state, current_state[val_col])

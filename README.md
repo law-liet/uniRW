@@ -1,5 +1,5 @@
 # uniRW
-A universal reader & writer package for stateful data file processing with basic map/filter/reduce functionality.
+A universal reader & writer package for stateful data file processing with basic map & reduce functionality.
 
 ## Current Features:
 - Reading:
