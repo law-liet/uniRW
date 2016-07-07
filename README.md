@@ -16,13 +16,14 @@ A universal reader & writer package for stateful data file processing with basic
     - Customize to_string methods
     
 ## To-do List:
-- Robust Error Message
+- Robust Error Messages
+- Documentations
 - Examples
 - Break down to unit tests
 - Customize comparation function for sorting
-- Add type checker (Python 3.5 typing module + Mypy ?)
 
 ## Future Work:
 - Better abstraction/structure (OO style?)
 - Better names for variables
 - Optimization
+- Add type checker (Python 3.5 typing module + Mypy ?)
