@@ -77,19 +77,21 @@ def readAll(file_names, mode, key_col, val_cols, split_re, has_header=False,
 
   for file_name in file_names:
 
-    key_val_dict, final_state = read(file_name= file_name,
-                                     mode= mode,
-                                     key_col= key_col,
-                                     val_cols= val_cols,
-                                     split_re= split_re,
-                                     has_header= has_header,
-                                     header_dict= header_dict,
-                                     ignore_chars= ignore_chars,
-                                     map_fs= map_fs,
-                                     reduce_fs= reduce_fs,
-                                     filter_f= filter_f,
-                                     state= state,
-                                     update_state= update_state)
+    key_val_dict, final_state = read(
+      file_name= file_name,
+      mode= mode,
+      key_col= key_col,
+      val_cols= val_cols,
+      split_re= split_re,
+      has_header= has_header,
+      header_dict= header_dict,
+      ignore_chars= ignore_chars,
+      map_fs= map_fs,
+      reduce_fs= reduce_fs,
+      filter_f= filter_f,
+      state= state,
+      update_state= update_state
+    )
 
     for key, val_dict in key_val_dict.items():
 
@@ -129,6 +131,8 @@ def write(file_name, mode, key_val_dict, col_names, header, split_char,
 
   if sort_by==None:
     sorted_items = sorted(key_val_dict.items())
+  elif sort_by=='key':
+    sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): k)
   else:
     sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): v[sort_by])
 
