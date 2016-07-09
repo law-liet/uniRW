@@ -23,6 +23,7 @@ Write:
 - Examples
 - Break down to unit tests
 - Customize comparation function for sorting
+- Combine states in reading multiple files
 
 ## Future Work:
 - Better abstraction/structure (OO style?)
