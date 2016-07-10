@@ -2,10 +2,10 @@
 
 class Reader:
 
-    def __init__(self, data_file, key, value, state, filter_f=lambda x:True):
+    def __init__(self, data_file, key, values, state, filter_f=lambda x:True):
         self.data_file = data_file
         self.key = key
-        self.value = value
+        self.values = values
         self.state = state
         self.filter_f = filter_f
 
