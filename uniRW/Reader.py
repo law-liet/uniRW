@@ -1,32 +1,16 @@
-from . import RW
+
 
 class Reader:
 
-    def __init__(self, key, value, state):
+    def __init__(self, data_file, key, value, state, filter_f=lambda x:True):
+        self.data_file = data_file
         self.key = key
         self.value = value
         self.state = state
+        self.filter_f = filter_f
 
-    def get_key(self):
-        return self.key
-
-    def get_value(self):
-        return self.value
-
-    def get_state(self):
-        return self.state
-
-    def set_key(self, key):
-        self.key = key
-
-    def set_value(self, value):
-        self.key = value
-
-    def set_state(self, state):
-        self.key = state
-
-    def read(self, file_name, mode):
+    def read(self, mode):
         pass
 
-    def readAll(self, file_names, mode):
+    def readAll(self, mode):
         pass
