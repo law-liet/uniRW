@@ -3,29 +3,25 @@
 
 from __future__ import print_function
 from re import split as resplit
-from .Util import check_and_apply_f, check_and_apply_2, idenL
-from .State import State
+from .Util import check_and_apply_f, check_and_apply_2
 import sys
 
 def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
          header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={},
-         filter_f=None, state={}, update_state=idenL):
+         filter_f=None, state={}, update_state=None):
 
   lineno = 0
   headers = header_dict
   key_val_dict = {}
-  #current_state = state.copy()
-  current_state = State(state.copy(),update_state)
+  current_state = state.copy()
 
   with open(file_name, mode) as file:
 
     for line in file:
       if line[0] in ignore_chars: continue
       a = resplit(split_re, line[:-1])
-      if key_col == None:
-        key = check_and_apply_2(map_fs, 'key', current_state, lineno)
-      else:
-        key = check_and_apply_2(map_fs, 'key', current_state, a[key_col])
+
+      key = check_and_apply_2(map_fs, 'key', current_state, a[key_col])
 
       if has_header:
         if lineno == 0:
@@ -36,10 +32,7 @@ def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
           lineno += 1
           continue
 
-      #if update_state != None: update_state(current_state, a)
-      current_state.release()
-      current_state.update(a)
-      current_state.lock()
+      if update_state != None: update_state(current_state, a)
 
       if filter_f != None and not filter_f(current_state, a):
         lineno += 1

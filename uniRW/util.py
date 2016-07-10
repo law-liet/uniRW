@@ -11,3 +11,12 @@ def idenL(x,dummy):
 
 def idenR(dummy,x):
   return x
+
+def to_int(dummy,x):
+  return int(x)
+
+def to_float(dummy,x):
+  return float(x)
+
+def to_str(dummy,x):
+  return str(x)

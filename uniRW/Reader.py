@@ -1,16 +1,85 @@
+from re import split as resplit
+from .Key import Key, StateKey
+from .Value import Value, StateValue
+from .File import DataFile
 
 
 class Reader:
 
-    def __init__(self, data_file, key, values, state, filter_f=lambda x:True):
-        self.data_file = data_file
-        self.key = key
-        self.values = values
-        self.state = state
+    def __init__(self, Key, Values, State, filter_f=lambda dummy,x:True):
+        self.Key = Key
+        self.Values = Values
+        self.State = State
         self.filter_f = filter_f
 
-    def read(self, mode):
-        pass
+    def read(self, data_file, mode='r', apply_post_map=False):
 
-    def readAll(self, mode):
+        lineno = 0
+        key_val_dict = {}
+        current_state = self.State.copy()
+
+        if not isinstance(data_file, DataFile):
+            raise ValueError("Data file is not a DataFile object.")
+
+        with open(data_file.file_name, mode) as file:
+
+            for line in file:
+                a = resplit(data_file.split_by, line[:-1])
+
+                if isinstance(self.Key, Key):
+                  key = self.Key.map_f(current_state, a[self.Key.column])
+                elif isinstance(self.Key, StateKey):
+                  key = self.Key.map_f(current_state, current_state.get(self.Key.state_name))
+                else:
+                  raise ValueError("Key is not a Key or StateKey object")
+
+                current_state.update(a)
+
+                if self.filter_f(current_state, a):
+                  lineno += 1
+                  continue
+
+                for value in self.Values:
+
+                    val_name = value.name
+
+                    if isinstance(value, StateValue):
+                      if value.state_name in current_state:
+                          val = value.map_f(current_state, current_state.get(value.state_name))
+                      else:
+                        raise KeyError(str(value.state_name) + " is not in state")
+                    elif isinstance(Value, Value):
+                        val = value.map_f(current_state, a[value.column])
+                    else:
+                        raise ValueError("Value is not a Value or StateValue object")
+
+                    if key in key_val_dict:
+                        if val_name in key_val_dict[key]:
+                            current_val = key_val_dict[key][val_name]
+                            reduced_val = value.reduce_f(current_val, val)
+                            key_val_dict[key][val_name] = reduced_val
+
+                        else:
+                            key_val_dict[key][val_name] = val
+                    else:
+                        key_val_dict[key] = {}
+                        key_val_dict[key][val_name] = val
+
+                lineno += 1
+
+        def post_map(state, v_dict):
+            new_v_dict = v_dict
+            for value in self.Values:
+                current_val = v_dict[value.name]
+                new_v_dict[value.name] = value.post_map_f(state, current_val)
+            return new_v_dict
+
+        if apply_post_map:
+            final_key_val_dict = {k: post_map(current_state,v_dict) for k, v_dict in key_val_dict.items()}
+            return final_key_val_dict, current_state
+        else:
+            return key_val_dict, current_state
+
+
+    def readAll(self, data_files, mode='r'):
         pass

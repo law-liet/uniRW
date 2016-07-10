@@ -2,10 +2,9 @@
 
 class Writer:
 
-    def __init__(self, output_file, key, values):
-        self.output_file = output_file
-        self.key = key
-        self.values = values
+    def __init__(self, Key, Values):
+        self.Key = Key
+        self.Values = Values
 
-    def write(self, mode):
+    def write(self, out_file, mode='w'):
         pass

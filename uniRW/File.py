@@ -1,15 +1,20 @@
+from os.path import isfile
+
 class File:
 
     def __init__(self, file_name, split_by):
-        self.filename = file_name
+        if isfile(file_name):
+            self.file_name = file_name
+        else:
+            raise ValueError(str(file_name) +" is not a file or not found")
         self.split_by = split_by
+
 
 class DataFile(File):
 
-    def __init__(self, file_name, split_re, has_header=False, skip_chars=[]):
+    def __init__(self, file_name, split_re):
         File.__init__(self, file_name, split_re)
-        self.has_header = has_header
-        self.skip_chars = []
+
 
 class OutputFile(File):
 

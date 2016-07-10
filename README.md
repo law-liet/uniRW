@@ -23,6 +23,6 @@ A universal reader & writer package for stateful data file processing with basic
 - Add type checker (Python 3.5 typing module + Mypy ?)
 
 ## Future Work:
-- Better abstraction/structure (OO style?)
+- Better abstraction/structure
 - Better names for variables
 - Optimization

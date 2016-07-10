@@ -1,8 +1,9 @@
 from __future__ import absolute_import
 
-from uniRW.RW import read, readAll, write
-from uniRW.Key import Key
-from uniRW.Value import Value, StateValue
-from uniRW.DataFile import DataFile, OutputFile
-from uniRW.Reader import Reader
-from uniRW.Writer import Writer
+from .RW import read, readAll, write
+from .Key import Key, StateKey, GeneralKey
+from .Value import Value, StateValue, GeneralValue
+from .File import DataFile, OutputFile, File
+from .Reader import Reader
+from .Writer import Writer
+from . import Util
