@@ -1,5 +1,5 @@
 import unittest
-from ..util import *
+from ..Util import *
 
 class UtilTest(unittest.TestCase):
     pass

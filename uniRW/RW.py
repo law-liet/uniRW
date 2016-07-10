@@ -3,17 +3,19 @@
 
 from __future__ import print_function
 from re import split as resplit
-from .util import check_and_apply_f, check_and_apply_2
+from .Util import check_and_apply_f, check_and_apply_2, idenL
+from .State import State
 import sys
 
 def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
          header_dict={}, ignore_chars=[], map_fs={}, reduce_fs={},
-         filter_f=None, state={}, update_state=None):
+         filter_f=None, state={}, update_state=idenL):
 
   lineno = 0
   headers = header_dict
   key_val_dict = {}
-  current_state = state.copy()
+  #current_state = state.copy()
+  current_state = State(state.copy(),update_state)
 
   with open(file_name, mode) as file:
 
@@ -34,7 +36,10 @@ def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
           lineno += 1
           continue
 
-      if update_state != None: update_state(current_state, a)
+      #if update_state != None: update_state(current_state, a)
+      current_state.release()
+      current_state.update(a)
+      current_state.lock()
 
       if filter_f != None and not filter_f(current_state, a):
         lineno += 1

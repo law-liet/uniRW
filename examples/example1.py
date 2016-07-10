@@ -36,7 +36,7 @@ def percentile_grade():
     sort_grade()
 
     def update(state, dummy):
-        state['rank'] += 1
+        state.set('rank', state.get('rank') + 1)
 
     grade_dict, state = RW.read(file_name= './data/sorted_example1.csv',
                                 mode= 'r',
@@ -47,7 +47,7 @@ def percentile_grade():
                                 state= {'rank': 0},
                                 update_state= update)
 
-    total = state['rank']
+    total = state.get('rank')
 
     def add_per_and_rev_rank(dict):
         rank = dict['rank']
