@@ -2,25 +2,23 @@ from os.path import isfile
 
 class File:
 
-    def __init__(self, file_name, split_by):
+    def __init__(self, file_name, line):
         if isfile(file_name):
             self.file_name = file_name
         else:
             raise ValueError(str(file_name) +" is not a file or not found")
-        self.split_by = split_by
-
+        self.line = line
 
 class DataFile(File):
 
-    def __init__(self, file_name, split_re):
-        File.__init__(self, file_name, split_re)
-
+    def __init__(self, file_name, has_header=False, line=None):
+        File.__init__(self, file_name, line)
+        self.has_header = has_header
 
 class OutputFile(File):
 
-    def __init__(self, file_name, split_char, *, header=[], foreword=[], epilogue=[], end_char='\n'):
-        File.__init__(self, file_name, split_char)
-        self.header = []
+    def __init__(self, file_name, line, header=[], foreword=[], epilogue=[]):
+        File.__init__(self, file_name, line)
+        self.header = header
         self.foreword = foreword
         self.epilogue = epilogue
-        self.end_char = end_char

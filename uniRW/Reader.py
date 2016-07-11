@@ -6,7 +6,7 @@ from .File import DataFile
 
 class Reader:
 
-    def __init__(self, Key, Values, State, filter_f=lambda dummy,x:True):
+    def __init__(self, Key, Values, State=None, filter_f=lambda dummy,x:True):
         self.Key = Key
         self.Values = Values
         self.State = State
@@ -16,7 +16,9 @@ class Reader:
 
         lineno = 0
         key_val_dict = {}
-        current_state = self.State.copy()
+        current_state = None
+        if self.State != None:
+            current_state = self.State.copy()
 
         if not isinstance(data_file, DataFile):
             raise ValueError("Data file is not a DataFile object.")
@@ -33,7 +35,8 @@ class Reader:
                 else:
                   raise ValueError("Key is not a Key or StateKey object")
 
-                current_state.update(a)
+                if self.State != None:
+                    current_state.update(a)
 
                 if self.filter_f(current_state, a):
                   lineno += 1
