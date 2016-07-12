@@ -28,19 +28,19 @@ class Reader:
             for line in file:
                 a = resplit(data_file.split_by, line[:-1])
 
-                if isinstance(self.Key, Key):
-                  key = self.Key.map_f(current_state, a[self.Key.column])
-                elif isinstance(self.Key, StateKey):
-                  key = self.Key.map_f(current_state, current_state.get(self.Key.state_name))
-                else:
-                  raise ValueError("Key is not a Key or StateKey object")
-
                 if self.State != None:
                     current_state.update(a)
 
                 if self.filter_f(current_state, a):
-                  lineno += 1
-                  continue
+                    lineno += 1
+                    continue
+
+                if isinstance(self.Key, Key):
+                    key = self.Key.map_f(current_state, a[self.Key.column])
+                elif isinstance(self.Key, StateKey):
+                    key = self.Key.map_f(current_state, current_state.get(self.Key.state_name))
+                else:
+                    raise ValueError("Key is not a Key or StateKey object")
 
                 for value in self.Values:
 

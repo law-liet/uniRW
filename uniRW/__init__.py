@@ -6,4 +6,4 @@ from .Value import Value, StateValue, GeneralValue
 from .File import DataFile, OutputFile, File
 from .Reader import Reader
 from .Writer import Writer
-from .Util import *g
+from .Util import *
