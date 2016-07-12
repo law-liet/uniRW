@@ -20,10 +20,6 @@ def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
     for line in file:
       if line[0] in ignore_chars: continue
       a = resplit(split_re, line[:-1])
-      if key_col == None:
-        key = check_and_apply_2(map_fs, 'key', current_state, lineno)
-      else:
-        key = check_and_apply_2(map_fs, 'key', current_state, a[key_col])
 
       if has_header:
         if lineno == 0:
@@ -39,6 +35,11 @@ def read(file_name, mode, key_col, val_cols, split_re, has_header=False,
       if filter_f != None and not filter_f(current_state, a):
         lineno += 1
         continue
+
+      if key_col == None:
+        key = check_and_apply_2(map_fs, 'key', current_state, lineno)
+      else:
+        key = check_and_apply_2(map_fs, 'key', current_state, a[key_col])
 
       for val_col in val_cols:
 
