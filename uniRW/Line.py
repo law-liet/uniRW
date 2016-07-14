@@ -2,17 +2,12 @@ from re import split as resplit
 
 class Line:
 
-    def __init__(self, name_col_dict, split_by, line=None):
+    def __init__(self, split_by, name_col_dict={}):
         self.name_col_dict = name_col_dict
         self.split_by = split_by
-        if line == None:
-            self.__line = None
-        else:
-            self.__line = resplit(self.split_by, line)
+        self.__line = None
 
     def get(self, name):
-        if self.__line == None:
-            raise ValueError("Line is not yet set.")
         if name in self.name_col_dict:
             return self.__line[self.name_col_dict[name]]
         else:
@@ -20,6 +15,13 @@ class Line:
 
     def set(self, line):
         self.__line = resplit(self.split_by, line)
+
+    def set_header(self):
+        for i,val in enumerate(self.__line):
+            if val in self.name_col_dict:
+                continue
+            else:
+                self.name_col_dict[val] = i
 
 class OuputLine:
 

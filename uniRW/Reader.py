@@ -1,4 +1,3 @@
-from re import split as resplit
 from .Key import Key, StateKey
 from .Value import Value, StateValue
 from .File import DataFile
@@ -26,19 +25,26 @@ class Reader:
         with open(data_file.file_name, mode) as file:
 
             for line in file:
-                a = resplit(data_file.split_by, line[:-1])
+
+                data_file.line.set(line)
+
+                if data_file.has_header:
+                    data_file.line.set_header()
+                    data_file.has_header = False
+                    lineno += 1
+                    continue
 
                 if self.State != None:
-                    current_state.update(a)
+                    current_state.update(data_file.line)
 
-                if self.filter_f(current_state, a):
+                if self.filter_f(current_state, data_file.line):
                     lineno += 1
                     continue
 
                 if isinstance(self.Key, Key):
-                    key = self.Key.map_f(current_state, a[self.Key.column])
+                    key = self.Key.map_f(current_state, data_file.line.get(self.Key.name))
                 elif isinstance(self.Key, StateKey):
-                    key = self.Key.map_f(current_state, current_state.get(self.Key.state_name))
+                    key = self.Key.map_f(current_state, current_state.get(self.Key.name))
                 else:
                     raise ValueError("Key is not a Key or StateKey object")
 
@@ -47,12 +53,12 @@ class Reader:
                     val_name = value.name
 
                     if isinstance(value, StateValue):
-                      if value.state_name in current_state:
-                          val = value.map_f(current_state, current_state.get(value.state_name))
+                      if value.name in current_state:
+                          val = value.map_f(current_state, current_state.get(value.name))
                       else:
-                        raise KeyError(str(value.state_name) + " is not in state")
+                        raise KeyError(str(value.name) + " is not in state")
                     elif isinstance(Value, Value):
-                        val = value.map_f(current_state, a[value.column])
+                        val = value.map_f(current_state, data_file.line.get(value.name))
                     else:
                         raise ValueError("Value is not a Value or StateValue object")
 

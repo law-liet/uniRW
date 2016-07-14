@@ -11,7 +11,7 @@ class File:
 
 class DataFile(File):
 
-    def __init__(self, file_name, has_header=False, line=None):
+    def __init__(self, file_name, line, has_header=False):
         File.__init__(self, file_name, line)
         self.has_header = has_header
 

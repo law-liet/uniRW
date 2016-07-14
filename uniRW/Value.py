@@ -1,5 +1,5 @@
 from __future__ import print_function
-from .Util import idenR
+from .util import idenR
 
 class GeneralValue:
 

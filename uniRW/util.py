@@ -12,11 +12,8 @@ def idenL(x,dummy):
 def idenR(dummy,x):
   return x
 
-def to_int(dummy,x):
-  return int(x)
+def pureR(f):
+  return lambda _,x: f(x)
 
-def to_float(dummy,x):
-  return float(x)
-
-def to_str(dummy,x):
-  return str(x)
+def pureL(f):
+  return lambda x,_: f(x)
