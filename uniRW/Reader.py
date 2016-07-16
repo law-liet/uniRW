@@ -26,11 +26,10 @@ class Reader:
 
             for line in file:
 
-                data_file.line.set(line)
+                data_file.line.set(line[:-1])
 
-                if data_file.has_header:
+                if data_file.header_lineno == lineno:
                     data_file.line.set_header()
-                    data_file.has_header = False
                     lineno += 1
                     continue
 
@@ -42,7 +41,7 @@ class Reader:
                     continue
 
                 if isinstance(self.Key, Key):
-                    key = self.Key.map_f(current_state, data_file.line.get(self.Key.name))
+                    key = self.Key.map_f(current_state, data_file.line.get_by_name(self.Key.name))
                 elif isinstance(self.Key, StateKey):
                     key = self.Key.map_f(current_state, current_state.get(self.Key.name))
                 else:
@@ -57,8 +56,8 @@ class Reader:
                           val = value.map_f(current_state, current_state.get(value.name))
                       else:
                         raise KeyError(str(value.name) + " is not in state")
-                    elif isinstance(Value, Value):
-                        val = value.map_f(current_state, data_file.line.get(value.name))
+                    elif isinstance(value, Value):
+                        val = value.map_f(current_state, data_file.line.get_by_name(value.name))
                     else:
                         raise ValueError("Value is not a Value or StateValue object")
 

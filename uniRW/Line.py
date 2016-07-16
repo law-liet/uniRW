@@ -7,11 +7,14 @@ class Line:
         self.split_by = split_by
         self.__line = None
 
-    def get(self, name):
+    def get_by_name(self, name):
         if name in self.name_col_dict:
             return self.__line[self.name_col_dict[name]]
         else:
             raise KeyError(str(name) + " is not in a data line")
+
+    def get_by_index(self, index):
+        return self.__line[index]
 
     def set(self, line):
         self.__line = resplit(self.split_by, line)

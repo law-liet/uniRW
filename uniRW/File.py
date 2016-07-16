@@ -3,17 +3,16 @@ from os.path import isfile
 class File:
 
     def __init__(self, file_name, line):
-        if isfile(file_name):
-            self.file_name = file_name
-        else:
-            raise ValueError(str(file_name) +" is not a file or not found")
+        self.file_name = file_name
         self.line = line
 
 class DataFile(File):
 
-    def __init__(self, file_name, line, has_header=False):
+    def __init__(self, file_name, line, header_lineno=-1):
         File.__init__(self, file_name, line)
-        self.has_header = has_header
+        if not isfile(file_name):
+            raise ValueError(str(file_name) +" is not a file or not found")
+        self.header_lineno = header_lineno
 
 class OutputFile(File):
 
