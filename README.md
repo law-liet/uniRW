@@ -26,7 +26,8 @@ Write:
 - Combine states in reading multiple files
 
 ## Future Work:
-- Better abstraction/structure (OO style?)
+- Better abstraction/structure
 - Hierarchical Processing
 - Optimization
 - Add type checker (Python 3.5 typing module + Mypy ?)
+

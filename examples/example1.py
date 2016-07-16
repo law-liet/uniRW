@@ -115,7 +115,7 @@ def percentile_grade():
         update_state= update
     )
 
-    total = state['rank']
+    total = state.get('rank')
 
     def add_per_and_rev_rank(dict):
         rank = dict['rank']
