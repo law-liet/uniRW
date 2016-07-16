@@ -36,7 +36,7 @@ def read_grade():
         has_header= True,
         ignore_chars= ['#'],
         split_re= ',',
-        map_fs= {1: lambda dummy,x: float(x)},
+        map_fs= {1: RW.pureR(float)},
         reduce_fs= {1: max}
     )
 
