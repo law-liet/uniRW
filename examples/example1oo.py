@@ -5,7 +5,7 @@
 import uniRW as RW
 
 # This example is a rewrite of example1.py using the less flexible
-# but more structural and robustobject-oriented approach
+# but more structural and robust object-oriented approach
 
 # example1.csv format:
 #
