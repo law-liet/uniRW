@@ -1,7 +1,7 @@
 from .Key import Key, StateKey
 from .Value import Value, StateValue
 from .File import DataFile
-
+from copy import copy
 
 class Reader:
 
@@ -17,7 +17,7 @@ class Reader:
         key_val_dict = {}
         current_state = None
         if self.State != None:
-            current_state = self.State.copy()
+            current_state = copy(self.State)
 
         if not isinstance(data_file, DataFile):
             raise ValueError("Data file is not a DataFile object.")
@@ -34,9 +34,11 @@ class Reader:
                     continue
 
                 if self.State != None:
+                    current_state.release()
                     current_state.update(data_file.line)
+                    current_state.lock()
 
-                if self.filter_f(current_state, data_file.line):
+                if not self.filter_f(current_state, data_file.line):
                     lineno += 1
                     continue
 
@@ -52,7 +54,7 @@ class Reader:
                     val_name = value.name
 
                     if isinstance(value, StateValue):
-                      if value.name in current_state:
+                      if current_state.check(value.name):
                           val = value.map_f(current_state, current_state.get(value.name))
                       else:
                         raise KeyError(str(value.name) + " is not in state")

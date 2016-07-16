@@ -1,5 +1,5 @@
 from __future__ import print_function
-from .Util import idenL
+from .util import idenL
 
 class State:
 
@@ -7,6 +7,9 @@ class State:
         self.__state = init_state
         self.__update = update_func
         self.__read_only = True
+
+    def check(self, name):
+        return name in self.__state
 
     def get(self, name):
         if name not in self.__state:
