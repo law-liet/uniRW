@@ -81,7 +81,7 @@ def sort_grade(file_name):
 
 #
 # Suppose we want to create a file with each student's grade, rank and percentile.
-## Idea:
+# Idea:
 #   Input: sorted by grade, header is in line 0
 #   To calculate percentile, need to know: rank -- line number
 #                                          total number of students -- number of lines
@@ -145,4 +145,4 @@ def percentile_grade(file_name):
 
 
 if __name__ == '__main__':
-    percentile_grade('./data' + 'example1.csv')
+    percentile_grade('./data/' + 'example1.csv')

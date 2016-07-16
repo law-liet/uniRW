@@ -92,4 +92,37 @@ class Reader:
 
 
     def readAll(self, data_files, mode='r'):
-        pass
+
+        final_key_val_dict = {}
+
+        for data_file in data_files:
+            key_val_dict, final_state = self.read(data_file= data_file)
+
+            for key, val_dict in key_val_dict.items():
+
+                if key in final_key_val_dict:
+
+                    for value in self.Values:
+
+                        val_name = value.name
+                        raw_val = val_dict[val_name]
+                        val = value.post_map_f(final_state, raw_val)
+
+                        if val_name in final_key_val_dict[key]:
+                            current_val = final_key_val_dict[key][val_name]
+                            reduced_val = value.post_reduce_f(current_val, val)
+                            final_key_val_dict[key][val_name] = reduced_val
+                        else:
+                            final_key_val_dict[key][val_name] = val
+
+                else:
+                    final_key_val_dict[key] = {}
+
+                    for value in self.Values:
+
+                        val_name = value.name
+                        raw_val = val_dict[val_name]
+                        val = value.post_map_f(final_state, raw_val)
+                        final_key_val_dict[key][val_name] = val
+
+        return final_key_val_dict
