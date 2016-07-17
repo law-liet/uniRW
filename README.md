@@ -9,7 +9,7 @@ Read:
 - Split by regular expression
 - Read multiple files
 - Simple map and reduce (by key) in one file or across multiple files
-- Read with evolving states (monadic?)
+- Read with evolving state (monadic?)
     
 Write:
 

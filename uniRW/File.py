@@ -1,10 +1,14 @@
 from os.path import isfile
+from .Line import Line
 
 class File:
 
     def __init__(self, file_name, line):
         self.file_name = file_name
-        self.line = line
+        if isinstance(line, Line):
+            self.line = line
+        else:
+            raise ValueError("line is not a Line object")
 
 class DataFile(File):
 

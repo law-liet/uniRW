@@ -1,12 +1,16 @@
-from .Key import Key, StateKey
+from .Key import Key, StateKey, GeneralKey
 from .Value import Value, StateValue
+from .State import State
 from .File import DataFile
 from copy import copy
 
 class Reader:
 
     def __init__(self, Key, Values, State=None, filter_f=lambda dummy,x:True):
-        self.Key = Key
+        if isinstance(Key, GeneralKey):
+            self.Key = Key
+        else:
+            raise ValueError("Key is not a Key or StateKey object")
         self.Values = Values
         self.State = State
         self.filter_f = filter_f
@@ -46,8 +50,7 @@ class Reader:
                     key = self.Key.map_f(current_state, data_file.line.get_by_name(self.Key.name))
                 elif isinstance(self.Key, StateKey):
                     key = self.Key.map_f(current_state, current_state.get(self.Key.name))
-                else:
-                    raise ValueError("Key is not a Key or StateKey object")
+
 
                 for value in self.Values:
 
@@ -96,7 +99,7 @@ class Reader:
         final_key_val_dict = {}
 
         for data_file in data_files:
-            key_val_dict, final_state = self.read(data_file= data_file)
+            key_val_dict, final_state = self.read(data_file= data_file, mode=mode)
 
             for key, val_dict in key_val_dict.items():
 

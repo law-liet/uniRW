@@ -4,8 +4,7 @@
 
 import uniRW as RW
 
-# This example is a rewrite of example1.py using the less flexible
-# but more structural and robust object-oriented approach
+# This example is a rewrite of example1.py using the more structural and robust object-oriented approach.
 
 # example1.csv format:
 #
@@ -105,6 +104,8 @@ def sort_grade(file_name):
 #         Student2,Grade2,Rank2,Percentile2
 #         ...
 #         StudentN,GradeN,RankN,PercentileN
+#
+# This method is for illustration purposeg. It is not the simplest approach.
 #
 def percentile_grade(file_name):
     sort_grade(file_name)
