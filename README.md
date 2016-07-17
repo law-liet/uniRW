@@ -28,7 +28,7 @@ Suppose we want read a file named *example.csv* that looks like this:
 ...     has_header= True,
 ...     map_fs= {1: RW.pureR(float)}
 ...     split_by= ','
-...)
+... )
 >>> print(grade_dict)
 {'Alice': 4.0, 'Bob': 3.0}
 ```
@@ -55,12 +55,12 @@ Suppose we want to write `grade_dict` to a new file.
 ...     key_val_dict= grade_dict,
 ...     split_char= ',',
 ...     header= ['Name','Grade']
-...     col_names= ['key', 'Grade'],
+...     col_names= ['key','Grade'],
 ...     sort_by= 'Grade'
-...)
+... )
 ```
 
-##### Method 2
+##### Method 2:
 ```Python
 >>> OutputLine = RW.OutputLine(delimiter= ',')
 >>> OutputFile = RW.OutputFile(
@@ -77,7 +77,8 @@ Both methods will create a new file named `new_example.csv` that looks like this
     Bob,3.0
     Alice,4.0
     
-See `examples/` for more examples.
+See [examples](https://github.com/law-liet/uniRW/tree/master/examples) for more examples.
+See [wiki](https://github.com/law-liet/uniRW/wiki) for documentation.
 
 ## Current Features
 Read:
