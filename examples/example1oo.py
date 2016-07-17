@@ -105,7 +105,7 @@ def sort_grade(file_name):
 #         ...
 #         StudentN,GradeN,RankN,PercentileN
 #
-# This method is for illustration purposeg. It is not the simplest approach.
+# This method is for illustration purpose. It is not the simplest approach.
 #
 def percentile_grade(file_name):
     sort_grade(file_name)
