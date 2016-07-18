@@ -37,7 +37,7 @@ Suppose we want read a file named *example.csv* that looks like this:
 ``` Python
 >>> name = RW.Key(name= 'Name')
 >>> grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
->>> gradeReader = RW.Reader(Key= 'Name', Values= [Grade])
+>>> gradeReader = RW.Reader(Key= name, Values= [grade])
 >>> line = RW.Line(delimiter= ',')
 >>> grade_file = RW.DataFile(file_name= 'example1.csv', line= line, header_lineno= 0)
 >>> grade_dict, _ = gradeReader.read(data_file= grade_file)
