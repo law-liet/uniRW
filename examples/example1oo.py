@@ -32,7 +32,7 @@ import uniRW as RW
 name  = RW.Key(name= 'Name')
 grade = RW.Value(name= 'Grade', map_f= RW.pureR(float), reduce_f= max)
 line  = RW.Line(delimiter= ',')
-outputLine = RW.OuputLine(delimiter= ',')
+outputLine = RW.OutputLine(delimiter=',')
 
 #
 # Suppose we want to read the grade file example1.csv and only record

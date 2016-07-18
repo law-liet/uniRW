@@ -57,12 +57,12 @@ class Reader:
                     val_name = value.name
 
                     if isinstance(value, StateValue):
-                      if current_state.check(value.name):
-                          val = value.map_f(current_state, current_state.get(value.name))
+                      if current_state.check(val_name):
+                          val = value.map_f(current_state, current_state.get(val_name))
                       else:
-                        raise KeyError(str(value.name) + " is not in state")
+                        raise KeyError(str(val_name) + " is not in state")
                     elif isinstance(value, Value):
-                        val = value.map_f(current_state, data_file.line.get_by_name(value.name))
+                        val = value.map_f(current_state, data_file.line.get_by_name(val_name))
                     else:
                         raise ValueError("Value is not a Value or StateValue object")
 
@@ -83,8 +83,9 @@ class Reader:
         def post_map(state, v_dict):
             new_v_dict = v_dict
             for value in self.Values:
-                current_val = v_dict[value.name]
-                new_v_dict[value.name] = value.post_map_f(state, current_val)
+                val_name = value.name
+                current_val = v_dict[val_name]
+                new_v_dict[val_name] = value.post_map_f(state, current_val)
             return new_v_dict
 
         if apply_post_map:

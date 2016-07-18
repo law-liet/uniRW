@@ -26,7 +26,7 @@ class Line:
             else:
                 self.name_col_dict[val] = i
 
-class OuputLine:
+class OutputLine:
 
     def __init__(self, delimiter, end_char='\n'):
         self.delimiter = delimiter
