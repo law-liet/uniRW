@@ -35,12 +35,12 @@ Suppose we want read a file named *example.csv* that looks like this:
 
 ##### Method 2:
 ``` Python
->>> Name = RW.Key(name= 'Name')
->>> Grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
->>> GradeReader = RW.Reader(Key= 'Name', Values= [Grade])
->>> Line = RW.Line(delimiter= ',')
->>> grade_file = RW.DataFile(file_name= 'example1.csv', line= Line, header_lineno= 0)
->>> grade_dict, _ = GradeReader.read(data_file= grade_file)
+>>> name = RW.Key(name= 'Name')
+>>> grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
+>>> gradeReader = RW.Reader(Key= 'Name', Values= [Grade])
+>>> line = RW.Line(delimiter= ',')
+>>> grade_file = RW.DataFile(file_name= 'example1.csv', line= line, header_lineno= 0)
+>>> grade_dict, _ = gradeReader.read(data_file= grade_file)
 >>> print(grade_dict)
 {'Alice': 4.0, 'Bob': 3.0}
 ```
@@ -60,16 +60,18 @@ Suppose we want to write `grade_dict` to a new file.
 ... )
 ```
 
-##### Method 2:
+##### Method 2: 
+`name` and `grade` are the same as defined at method 2 above.
+
 ```Python
->>> OutputLine = RW.OutputLine(delimiter= ',')
->>> OutputFile = RW.OutputFile(
+>>> outputLine = RW.OutputLine(delimiter= ',')
+>>> outputFile = RW.OutputFile(
 ...     file_name= 'new_example.csv',
-...     line= OutputLine,
+...     line= outputLine,
 ...     header= ['Name','Grade']
-...)
->>> GradeWriter = RW.Writer(KeyValues= [Name,Grade])
->>> GradeWriter.write(out_file= OutputFile, key_val_dict= grade_dict, sort_by= 'Grade')
+... )
+>>> gradeWriter = RW.Writer(KeyValues= [name,grade])
+>>> gradeWriter.write(out_file= outputFile, key_val_dict= grade_dict, sort_by= 'Grade')
 ```
 Both methods will create a new file named `new_example.csv` that looks like this:
     

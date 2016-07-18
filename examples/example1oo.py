@@ -29,10 +29,10 @@ import uniRW as RW
 #          - delimiter ','
 #
 
-Name  = RW.Key(name= 'Name')
-Grade = RW.Value(name= 'Grade', map_f= RW.pureR(float), reduce_f= max)
-Line  = RW.Line(delimiter= ',')
-OutputLine = RW.OuputLine(delimiter= ',')
+name  = RW.Key(name= 'Name')
+grade = RW.Value(name= 'Grade', map_f= RW.pureR(float), reduce_f= max)
+line  = RW.Line(delimiter= ',')
+outputLine = RW.OuputLine(delimiter= ',')
 
 #
 # Suppose we want to read the grade file example1.csv and only record
@@ -47,9 +47,9 @@ def read_grade(file_name):
     def skip_first_line(line):
         return not line.get_by_index(0)[0] == '#'
 
-    GradeFile     = RW.DataFile(file_name= file_name, line= Line, header_lineno= 1)
-    GradeReader   = RW.Reader(Key= Name, Values= [Grade], filter_f= RW.pureR(skip_first_line))
-    grade_dict, _ = GradeReader.read(data_file= GradeFile)
+    gradeFile     = RW.DataFile(file_name= file_name, line= line, header_lineno= 1)
+    gradeReader   = RW.Reader(Key= name, Values= [grade], filter_f= RW.pureR(skip_first_line))
+    grade_dict, _ = gradeReader.read(data_file= gradeFile)
     return grade_dict
 
 #
@@ -70,13 +70,13 @@ def read_grade(file_name):
 def sort_grade(file_name):
     grade_dict = read_grade(file_name)
 
-    OutputFile = RW.OutputFile(
+    outputFile = RW.OutputFile(
         file_name= '.'.join(file_name.split('.')[:-1]) + '_sorted.csv',
-        line= OutputLine,
+        line= outputLine,
         header= ['Name','Grade']
     )
-    GradeWriter = RW.Writer(KeyValues= [Name,Grade])
-    GradeWriter.write(out_file= OutputFile, key_val_dict= grade_dict, sort_by= 'Grade', reverse= True)
+    gradeWriter = RW.Writer(KeyValues= [name,grade])
+    gradeWriter.write(out_file= outputFile, key_val_dict= grade_dict, sort_by= 'Grade', reverse= True)
 
 #
 # Suppose we want to create a file with each student's grade, rank and percentile.
@@ -126,22 +126,22 @@ def percentile_grade(file_name):
         a,b = val
         return str(a) + ',' + str(b)
 
-    Rank        = RW.StateValue(name= 'rank', post_map_f= get_percentile, to_string= print_tuple)
-    GradeReader = RW.Reader(Key= Name, Values= [Rank,Grade], State= state)
-    GradeFile   = RW.DataFile(
+    rank        = RW.StateValue(name= 'rank', post_map_f= get_percentile, to_string= print_tuple)
+    gradeReader = RW.Reader(Key= name, Values= [rank,grade], State= state)
+    gradeFile   = RW.DataFile(
         file_name= file_prefix + '_sorted.csv',
-        line= Line,
+        line= line,
         header_lineno= 0
     )
-    grade_dict, _ = GradeReader.read(data_file= GradeFile, apply_post_map= True)
+    grade_dict, _ = gradeReader.read(data_file= gradeFile, apply_post_map= True)
 
-    OutputFile = RW.OutputFile(
+    outputFile = RW.OutputFile(
         file_name= file_prefix + '_percentile.csv',
-        line= OutputLine,
+        line= outputLine,
         header= ['Name','Grade','Rank','Percentile']
     )
-    GradeWriter = RW.Writer(KeyValues= [Name,Grade,Rank])
-    GradeWriter.write(out_file= OutputFile, key_val_dict= grade_dict, sort_by= 'Grade', reverse= True)
+    gradeWriter = RW.Writer(KeyValues= [name,grade,rank])
+    gradeWriter.write(out_file= outputFile, key_val_dict= grade_dict, sort_by= 'Grade', reverse= True)
 
 
 
