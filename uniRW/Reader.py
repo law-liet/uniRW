@@ -1,7 +1,8 @@
-from .Key import Key, StateKey, GeneralKey
-from .Value import Value, StateValue
-from .State import State
-from .File import DataFile
+from __future__ import absolute_import
+from uniRW.Key import Key, StateKey, GeneralKey
+from uniRW.Value import Value, StateValue
+from uniRW.State import State
+from uniRW.File import DataFile
 from copy import copy
 
 class Reader:

@@ -1,5 +1,6 @@
+from __future__ import absolute_import
 import unittest
-from ..Util import *
+from uniRW.util import *
 
 class UtilTest(unittest.TestCase):
     pass

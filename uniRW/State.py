@@ -1,5 +1,6 @@
 from __future__ import print_function
-from .util import idenL
+from __future__ import absolute_import
+from uniRW.util import idenL
 
 class State:
 

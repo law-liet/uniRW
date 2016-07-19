@@ -1,6 +1,7 @@
 from __future__ import print_function
-from .Key import GeneralKey
-from .Value import GeneralValue
+from __future__ import absolute_import
+from uniRW.Key import GeneralKey
+from uniRW.Value import GeneralValue
 
 class Writer:
 
