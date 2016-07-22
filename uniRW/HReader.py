@@ -10,32 +10,63 @@ class HReader:
         self.state = state
         self.filter_f = filter_f
 
-    def merge(self, layer, hierarchy1, hierarchy2):
-        merged_hierarchy = hierarchy1.copy()
-        inter_hierarchy = {}
+
+    def apply_post_map(self, layer, state, value_hierarchy):
+        if type(layer) is list:
+
+            for value in layer:
+                if isinstance(value, StateValue):
+                    val_name = value.name
+                    if state.check(val_name):
+                        val = value.post_map_f(state, value_hierarchy[val_name])
+                    else:
+                        raise KeyError(str(value.name) + " is not in state")
+                elif isinstance(value, Value):
+                    val_name = value.name
+                    val = value.post_map_f(state, value_hierarchy[val_name])
+                else:
+                    raise ValueError("Value is not a Value or StateValue object")
+
+                value_hierarchy[val_name] = val
+
+        elif type(layer) is dict:
+            value, next_layer = layer.items()[0]
+            for val_name, _ in value_hierarchy.items():
+                self.apply_post_map(next_layer, state, value_hierarchy[value.name])
+        else:
+            raise ValueError("Invalid hierarchy structure")
+
+
+
+    def merge(self, layer, value_hierarchy1, value_hierarchy2, post=False, state=None):
+        merged_hierarchy = value_hierarchy1.copy()
 
         if type(layer) is list:
 
             for value in layer:
-                val1 = hierarchy1[value.name]
-                val2 = hierarchy2[value.name]
-                new_val = value.reduce_f(val1,val2)
-                inter_hierarchy[value.name] = new_val
+                val1 = value_hierarchy1[value.name]
+                val2 = value_hierarchy2[value.name]
+                if post:
+                    new_val1 = value.post_map_f(state, val1)
+                    new_val2 = value.post_map_f(state, val2)
+                    new_val = value.post_reduce_f(new_val1, new_val2)
+                else:
+                    new_val = value.reduce_f(val1,val2)
+                merged_hierarchy[value.name] = new_val
 
         elif type(layer) is dict:
             value, next_layer = layer.items()[0]
-            for val, next_val_layer2 in hierarchy2.items():
-                if val in hierarchy1:
-                    next_val_layer1 = hierarchy1[val]
-                    inter_hierarchy[val] = self.merge(next_layer, next_val_layer1, next_val_layer2)
+            for val, next_val_layer2 in value_hierarchy2.items():
+                if val in value_hierarchy1:
+                    next_val_layer1 = value_hierarchy1[val]
+                    merged_hierarchy[val] = self.merge(next_layer, next_val_layer1, next_val_layer2)
                 else:
-                    inter_hierarchy[val] = next_val_layer2
+                    merged_hierarchy[val] = self.apply_post_map(next_layer, state, next_val_layer2)
         else:
-            raise ValueError("Wrong hierarchy structure")
-
-        merged_hierarchy.update(inter_hierarchy)
+            raise ValueError("Invalid hierarchy structure")
 
         return merged_hierarchy
+
 
     def traverse(self, layer, data_file, current_state, value_hierarchy):
 
@@ -90,9 +121,10 @@ class HReader:
                 self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
 
         else:
-            raise ValueError("Wrong hierarchy structure")
-    
-    def read(self, data_file, mode='r', carry_state=False):
+            raise ValueError("Invalid hierarchy structure")
+
+
+    def read(self, data_file, mode='r', apply_post_map=False, carry_state=False):
 
         if not isinstance(data_file, DataFile):
             raise ValueError("Data file is not a DataFile object.")
@@ -101,6 +133,9 @@ class HReader:
         value_hierarchy = {}
         current_state = None
         if self.state != None:
+            if not isinstance(self.state, State):
+                raise ValueError("State is a State object")
+
             if not carry_state:
                 current_state = copy(self.state)
             else:
@@ -130,4 +165,19 @@ class HReader:
 
                 lineno += 1
 
+        if apply_post_map:
+            self.apply_post_map(self.hierarchy,current_state,value_hierarchy)
+
         return value_hierarchy, current_state
+
+
+    def readAll(self, data_files, mode='r', carry_state=False):
+
+        final_value_hierarchy = {}
+
+        for data_file in data_files:
+            value_hierarchy, final_state = self.read(data_file= data_file, mode=mode)
+            final_value_hierarchy = \
+                self.merge(self.hierarchy, final_value_hierarchy, value_hierarchy, True, final_state)
+
+        return final_value_hierarchy
