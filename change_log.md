@@ -1,3 +1,14 @@
+### v0.4.0:
+New features:
+
+- Key abstraction not needed anymore
+- Read and write data file in customized hierarchy
+
+### v0.3.0
+New features: 
+
+- Object-oriented abstraction of key, value, line, file, reader and writer
+
 ### v0.2.0
 New features: 
 

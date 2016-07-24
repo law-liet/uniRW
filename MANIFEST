@@ -2,6 +2,8 @@
 setup.cfg
 setup.py
 uniRW/File.py
+uniRW/HReader.py
+uniRW/HWriter.py
 uniRW/Key.py
 uniRW/Line.py
 uniRW/RW.py
