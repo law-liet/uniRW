@@ -8,4 +8,7 @@ from uniRW.Line import Line, OutputLine
 from uniRW.File import DataFile, OutputFile, File
 from uniRW.Reader import Reader
 from uniRW.Writer import Writer
+from uniRW.HReader import HReader
+from uniRW.HWriter import HWriter
 from uniRW.util import *
+
