@@ -26,8 +26,8 @@ class HReader:
 
         elif type(layer) is dict:
             value, next_layer = layer.items()[0]
-            for val_name, _ in value_hierarchy.items():
-                self.apply_post_map(next_layer, state, value_hierarchy[value.name])
+            for val, _ in value_hierarchy.items():
+                self.apply_post_map(next_layer, state, value_hierarchy[val])
         else:
             val, next_layer = layer
             self.apply_post_map(next_layer,state,value_hierarchy[val])

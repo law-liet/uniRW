@@ -8,4 +8,6 @@ from .Line import Line, OuputLine
 from .File import DataFile, OutputFile, File
 from .Reader import Reader
 from .Writer import Writer
+from uniRW.HReader import HReader
+from uniRW.HWriter import HWriter
 from .util import *
