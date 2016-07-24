@@ -5,8 +5,8 @@ from copy import copy
 
 class HReader:
 
-    def __init__(self, hierarchy, state=None, filter_f=lambda _,x: True):
-        self.hierarchy = hierarchy
+    def __init__(self, hierarchy_spec, state=None, filter_f=lambda _, x: True):
+        self.hierarchy_spec = hierarchy_spec
         self.state = state
         self.filter_f = filter_f
 
@@ -67,7 +67,7 @@ class HReader:
             val, next_layer = layer
             merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val])
 
-            #raise ValueError("Invalid hierarchy structure")
+            #raise ValueError("Invalid hierarchy_spec structure")
 
         return merged_hierarchy
 
@@ -133,7 +133,7 @@ class HReader:
             value_hierarchy[val] = {}
             self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
 
-            #raise ValueError("Invalid hierarchy structure")
+            #raise ValueError("Invalid hierarchy_spec structure")
 
 
     def read(self, data_file, mode='r', apply_post_map=False, carry_state=False):
@@ -173,12 +173,12 @@ class HReader:
                     lineno += 1
                     continue
 
-                self.traverse(self.hierarchy, data_file, current_state, value_hierarchy)
+                self.traverse(self.hierarchy_spec, data_file, current_state, value_hierarchy)
 
                 lineno += 1
 
         if apply_post_map:
-            self.apply_post_map(self.hierarchy,current_state,value_hierarchy)
+            self.apply_post_map(self.hierarchy_spec, current_state, value_hierarchy)
 
         return value_hierarchy, current_state
 
@@ -190,6 +190,6 @@ class HReader:
         for data_file in data_files:
             value_hierarchy, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
             final_value_hierarchy = \
-                self.merge(self.hierarchy, final_value_hierarchy, value_hierarchy, True, final_state)
+                self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
 
         return final_value_hierarchy

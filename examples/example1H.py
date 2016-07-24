@@ -28,13 +28,13 @@ import uniRW as RW
 #               ("Name" for column 0, "Grade" for column 1)
 #          - delimiter ','
 #   Hierarchy - { name : grade }
-#   (Note that we no longer need Key here, since the key-value relation can be defined by a hierarchy of values)
+#   (Note that we no longer need Key here, since the key-value relation can be defined by a hierarchy_spec of values)
 #
 
 name  = RW.Value(name='Name')
 grade = RW.Value(name='Grade', map_f= RW.pureR(float), reduce_f= max)
 line  = RW.Line(delimiter=',')
-outputLine = RW.OuputLine(delimiter=',')
+outputLine = RW.OutputLine(delimiter=',')
 gradeBook = {name: [grade]}
 
 #
@@ -51,7 +51,7 @@ def read_grade(file_name):
         return not line.get_by_index(0)[0] == '#'
 
     gradeFile     = RW.DataFile(file_name= file_name, line= line, header_lineno= 1)
-    gradeReader   = RW.HReader(hierarchy= gradeBook, filter_f= RW.pureR(skip_first_line))
+    gradeReader   = RW.HReader(hierarchy_spec= gradeBook, filter_f= RW.pureR(skip_first_line))
     grade_dict, _ = gradeReader.read(data_file= gradeFile)
     return grade_dict
 
@@ -78,7 +78,7 @@ def sort_grade(file_name):
         line= outputLine,
         header= ['Name','Grade']
     )
-    gradeWriter = RW.HWriter(hierarchy= gradeBook, value_line= [name, grade])
+    gradeWriter = RW.HWriter(hierarchy_spec= gradeBook, value_line= [name, grade])
     gradeWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade', reverse= True)
 
 #
@@ -131,7 +131,7 @@ def percentile_grade(file_name):
 
     rank        = RW.StateValue(name= 'rank', post_map_f= get_percentile, to_string= print_tuple)
     gradeBook2  = { name: [grade, rank] }
-    gradeReader = RW.HReader(hierarchy=gradeBook2, state= state)
+    gradeReader = RW.HReader(hierarchy_spec=gradeBook2, state= state)
     gradeFile   = RW.DataFile(
         file_name= file_prefix + '_sorted.csv',
         line= line,
@@ -144,7 +144,7 @@ def percentile_grade(file_name):
         line= outputLine,
         header= ['Name','Grade','Rank','Percentile']
     )
-    gradeWriter = RW.HWriter(hierarchy=gradeBook2, value_line= [name,grade,rank])
+    gradeWriter = RW.HWriter(hierarchy_spec=gradeBook2, value_line= [name, grade, rank])
     gradeWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade', reverse= True)
 
 if __name__ == '__main__':

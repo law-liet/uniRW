@@ -3,8 +3,8 @@ from uniRW.Value import GeneralValue
 
 class HWriter:
 
-    def __init__(self, hierarchy, value_line=[]):
-        self.hierarchy = hierarchy
+    def __init__(self, hierarchy_spec, value_line=[]):
+        self.hierarchy_spec = hierarchy_spec
         self.value_line = value_line
 
     def flatten(self, layer, value_hierarchy, value_lines, value_line={}):
@@ -42,7 +42,7 @@ class HWriter:
         print(header_line, file=output, end='')
 
         value_lines = []
-        self.flatten(self.hierarchy, value_hierarchy, value_lines)
+        self.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
         sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by])
 
         for line in sorted_lines:

@@ -45,6 +45,17 @@ Suppose we want read a file named *example.csv* that looks like this:
 {'Alice': 4.0, 'Bob': 3.0}
 ```
 
+##### Method 3:
+`grade_file` is the same as defined at method 2 above.
+``` Python
+>>> name = RW.Value(name= 'Name')
+>>> grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
+>>> gradeHReader = RW.HReader(hierarchy_spec= { name: [grade] })
+>>> grade_dict, _ = gradeHReader.read(data_file= grade_file)
+>>> print(grade_dict)
+{'Alice': 4.0, 'Bob': 3.0}
+```
+
 Suppose we want to write `grade_dict` to a new file.
 
 ##### Method 1:
@@ -73,7 +84,16 @@ Suppose we want to write `grade_dict` to a new file.
 >>> gradeWriter = RW.Writer(KeyValues= [name,grade])
 >>> gradeWriter.write(out_file= outputFile, key_val_dict= grade_dict, sort_by= 'Grade')
 ```
-Both methods will create a new file named `new_example.csv` that looks like this:
+
+##### Method 3: 
+`name`, `grade` and `outputFile` are the same as defined at method 2 above.
+
+```Python
+>>> gradeHWriter = RW.HWriter(hierarchy_spec={ name: [grade] }, value_line= [name,grade])
+>>> gradeHWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade')
+```
+
+All methods will create a new file named `new_example.csv` that looks like this:
     
     Name,Grade
     Bob,3.0
@@ -89,14 +109,17 @@ Read:
 - Filter lines of a file
 - Split by regular expression
 - Read multiple files
+- Carry state across files
 - Simple map and reduce (by key) in one file or across multiple files
 - Read with evolving state (monadic?)
+- Read data file in customized hierarchy
     
 Write:
 
 - Select key and values to write
 - Sort by key or value
 - Customize to_string methods
+- Write data file in customized hierarchy
     
 ## To-do List
 - Robust Error Messages
@@ -108,7 +131,6 @@ Write:
 
 ## Future Work
 - Better abstraction/structure
-- Hierarchical Processing
 - Optimization
 - Add type checker (Python 3.5 typing module + Mypy ?)
 
