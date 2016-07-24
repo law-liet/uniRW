@@ -133,9 +133,9 @@ def write(file_name, mode, key_val_dict, col_names, header, split_char,
   if sort_by==None:
     sorted_items = sorted(key_val_dict.items())
   elif sort_by=='key':
-    sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): k)
+    sorted_items = sorted(key_val_dict.items(), key= lambda kv: kv[0])
   else:
-    sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): v[sort_by])
+    sorted_items = sorted(key_val_dict.items(), key= lambda kv: kv[1][sort_by])
 
   for key, val_dict in sorted_items:
 

@@ -17,9 +17,9 @@ class Writer:
         if sort_by==None:
             sorted_items = sorted(key_val_dict.items(), reverse=reverse)
         elif sort_by=='key':
-            sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): k, reverse=reverse)
+            sorted_items = sorted(key_val_dict.items(), key= lambda kv: kv[0], reverse=reverse)
         else:
-            sorted_items = sorted(key_val_dict.items(), key= lambda (k,v): v[sort_by], reverse=reverse)
+            sorted_items = sorted(key_val_dict.items(), key= lambda kv: kv[1][sort_by], reverse=reverse)
 
         for key, val_dict in sorted_items:
 
