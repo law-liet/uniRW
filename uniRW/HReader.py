@@ -51,6 +51,7 @@ class HReader:
                     else:
                         new_val = value.reduce_f(val1,val2)
                     merged_hierarchy[value.name] = new_val
+
                 else:
                     val, next_layer = value
                     merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val])
@@ -62,7 +63,9 @@ class HReader:
                     next_val_layer1 = value_hierarchy1[val]
                     merged_hierarchy[val] = self.merge(next_layer, next_val_layer1, next_val_layer2)
                 else:
-                    merged_hierarchy[val] = self.apply_post_map(next_layer, state, next_val_layer2)
+                    if post:
+                        self.apply_post_map(next_layer, state, next_val_layer2)
+                    merged_hierarchy[val] = next_val_layer2
         else:
             val, next_layer = layer
             merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val])
