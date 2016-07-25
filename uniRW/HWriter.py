@@ -36,10 +36,11 @@ class HWriter:
     def write(self, out_file, value_hierarchy, mode='w', sort_by=None, reverse=False):
 
         output = open(out_file.file_name, mode)
-        header_line = out_file.line.get_line(out_file.header)
         for foreword_line in out_file.foreword:
             print(foreword_line, file=output)
-        print(header_line, file=output, end='')
+        if out_file.header != []:
+            header_line = out_file.line.get_line(out_file.header)
+            print(header_line, file=output, end='')
 
         value_lines = []
         self.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
