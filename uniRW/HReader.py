@@ -146,6 +146,7 @@ class HReader:
 
         lineno = 0
         value_hierarchy = {}
+        value_hierarchy_list = []
         current_state = None
         if self.state != None:
             if not isinstance(self.state, State):
@@ -176,14 +177,27 @@ class HReader:
                     lineno += 1
                     continue
 
-                self.traverse(self.hierarchy_spec, data_file, current_state, value_hierarchy)
+                if type(self.hierarchy_spec) is list:
+                    for hierarchy_spec in self.hierarchy_spec:
+                        value_hierarchy_copy = value_hierarchy.copy()
+                        self.traverse(hierarchy_spec, data_file, current_state, value_hierarchy_copy)
+                        value_hierarchy_list.append(value_hierarchy_copy)
+                else:
+                    self.traverse(self.hierarchy_spec, data_file, current_state, value_hierarchy)
 
                 lineno += 1
 
-        if apply_post_map:
-            self.apply_post_map(self.hierarchy_spec, current_state, value_hierarchy)
+        if type(self.hierarchy_spec) is list:
 
-        return value_hierarchy, current_state
+            for hierarchy_spec, value_hierarchy in zip(self.hierarchy_spec, value_hierarchy_list):
+                if apply_post_map:
+                    self.apply_post_map(hierarchy_spec, current_state, value_hierarchy)
+
+            return value_hierarchy_list, current_state
+        else:
+            if apply_post_map:
+                self.apply_post_map(self.hierarchy_spec, current_state, value_hierarchy)
+            return value_hierarchy, current_state
 
 
     def readAll(self, data_files, mode='r', carry_state=False):
