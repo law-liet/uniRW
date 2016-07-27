@@ -209,11 +209,30 @@ class HReader:
 
     def readAll(self, data_files, mode='r', carry_state=False):
 
-        final_value_hierarchy = {}
+        if type(self.hierarchy_spec) is list:
+            multi_hierarchy = True
+        else:
+            multi_hierarchy = False
 
-        for data_file in data_files:
-            value_hierarchy, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
-            final_value_hierarchy = \
-                self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
+        if multi_hierarchy:
+            final_value_hierarchy_list = []
 
-        return final_value_hierarchy
+            for data_file in data_files:
+                value_hierarchy_list, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
+                for i, value_hierarchy in enumerate(value_hierarchy_list):
+                    if i >= len(final_value_hierarchy_list):
+                        final_value_hierarchy_list.append({})
+                    final_value_hierarchy = final_value_hierarchy_list[i]
+                    final_value_hierarchy_list[i] = \
+                        self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
+
+            return final_value_hierarchy_list
+
+        else:
+            final_value_hierarchy = {}
+            for data_file in data_files:
+                value_hierarchy, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
+                final_value_hierarchy = \
+                    self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
+
+            return final_value_hierarchy
