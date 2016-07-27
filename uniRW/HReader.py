@@ -54,21 +54,22 @@ class HReader:
 
                 else:
                     val, next_layer = value
-                    merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val])
+                    merged_hierarchy[val] = \
+                        self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
 
         elif type(layer) is dict:
             value, next_layer = layer.items()[0]
             for val, next_val_layer2 in value_hierarchy2.items():
                 if val in value_hierarchy1:
                     next_val_layer1 = value_hierarchy1[val]
-                    merged_hierarchy[val] = self.merge(next_layer, next_val_layer1, next_val_layer2)
+                    merged_hierarchy[val] = self.merge(next_layer, next_val_layer1, next_val_layer2, post, state)
                 else:
                     if post:
                         self.apply_post_map(next_layer, state, next_val_layer2)
                     merged_hierarchy[val] = next_val_layer2
         else:
             val, next_layer = layer
-            merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val])
+            merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
 
             #raise ValueError("Invalid hierarchy_spec structure")
 
@@ -184,10 +185,13 @@ class HReader:
                     continue
 
                 if multi_hierarchy:
-                    for hierarchy_spec in self.hierarchy_spec:
-                        value_hierarchy_copy = value_hierarchy.copy()
+                    for i, hierarchy_spec in enumerate(self.hierarchy_spec):
+                        if i >= len(value_hierarchy_list):
+                            value_hierarchy_list.append(value_hierarchy.copy())
+                        value_hierarchy_copy = value_hierarchy_list[i]
                         self.traverse(hierarchy_spec, data_file, current_state, value_hierarchy_copy)
-                        value_hierarchy_list.append(value_hierarchy_copy)
+                        value_hierarchy_list[i] = value_hierarchy_copy
+
                 else:
                     self.traverse(self.hierarchy_spec, data_file, current_state, value_hierarchy)
 
@@ -218,13 +222,14 @@ class HReader:
             final_value_hierarchy_list = []
 
             for data_file in data_files:
-                value_hierarchy_list, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
+                value_hierarchy_list, final_state = self.read(data_file= data_file, mode= mode, apply_post_map=True, carry_state= carry_state)
+
                 for i, value_hierarchy in enumerate(value_hierarchy_list):
                     if i >= len(final_value_hierarchy_list):
                         final_value_hierarchy_list.append({})
                     final_value_hierarchy = final_value_hierarchy_list[i]
                     final_value_hierarchy_list[i] = \
-                        self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
+                        self.merge(self.hierarchy_spec[i], final_value_hierarchy, value_hierarchy, True, final_state)
 
             return final_value_hierarchy_list
 
