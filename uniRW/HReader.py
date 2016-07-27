@@ -148,6 +148,12 @@ class HReader:
         value_hierarchy = {}
         value_hierarchy_list = []
         current_state = None
+
+        if type(self.hierarchy_spec) is list:
+            multi_hierarchy = True
+        else:
+            multi_hierarchy = False
+
         if self.state != None:
             if not isinstance(self.state, State):
                 raise ValueError("State is a State object")
@@ -177,7 +183,7 @@ class HReader:
                     lineno += 1
                     continue
 
-                if type(self.hierarchy_spec) is list:
+                if multi_hierarchy:
                     for hierarchy_spec in self.hierarchy_spec:
                         value_hierarchy_copy = value_hierarchy.copy()
                         self.traverse(hierarchy_spec, data_file, current_state, value_hierarchy_copy)
@@ -187,16 +193,17 @@ class HReader:
 
                 lineno += 1
 
-        if type(self.hierarchy_spec) is list:
+        if multi_hierarchy:
 
-            for hierarchy_spec, value_hierarchy in zip(self.hierarchy_spec, value_hierarchy_list):
-                if apply_post_map:
+            if apply_post_map:
+                for hierarchy_spec, value_hierarchy in zip(self.hierarchy_spec, value_hierarchy_list):
                     self.apply_post_map(hierarchy_spec, current_state, value_hierarchy)
 
             return value_hierarchy_list, current_state
         else:
             if apply_post_map:
                 self.apply_post_map(self.hierarchy_spec, current_state, value_hierarchy)
+
             return value_hierarchy, current_state
 
 
