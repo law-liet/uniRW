@@ -22,7 +22,7 @@ class HWriter:
 
             elif type(layer) is dict:
                 current_value_line = value_line.copy()
-                value, next_layer = layer.items()[0]
+                value, next_layer = list(layer.items())[0]
                 current_value_line[value.name] = root
                 self.flatten(next_layer, next, value_lines, current_value_line)
                 value_lines.append(current_value_line)
@@ -44,7 +44,10 @@ class HWriter:
 
         value_lines = []
         self.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
-        sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by])
+        if sort_by == None:
+            sorted_lines = value_lines
+        else:
+            sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by])
 
         for line in sorted_lines:
             values = []

@@ -9,6 +9,7 @@ class HReader:
         self.hierarchy_spec = hierarchy_spec
         self.state = state
         self.filter_f = filter_f
+        self.__init_state = copy(self.state)
 
 
     def apply_post_map(self, layer, state, value_hierarchy):
@@ -25,7 +26,7 @@ class HReader:
 
 
         elif type(layer) is dict:
-            value, next_layer = layer.items()[0]
+            value, next_layer = list(layer.items())[0]
             for val, _ in value_hierarchy.items():
                 self.apply_post_map(next_layer, state, value_hierarchy[val])
         else:
@@ -58,7 +59,7 @@ class HReader:
                         self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
 
         elif type(layer) is dict:
-            value, next_layer = layer.items()[0]
+            value, next_layer = list(layer.items())[0]
             for val, next_val_layer2 in value_hierarchy2.items():
                 if val in value_hierarchy1:
                     next_val_layer1 = value_hierarchy1[val]
@@ -76,7 +77,7 @@ class HReader:
         return merged_hierarchy
 
 
-    def traverse(self, layer, data_file, current_state, value_hierarchy):
+    def traverse(self, layer, line, current_state, value_hierarchy):
 
         if type(layer) is list:
 
@@ -90,11 +91,11 @@ class HReader:
                         raise KeyError(str(value.name) + " is not in state")
                 elif isinstance(value, Value):
                     val_name = value.name
-                    val = value.map_f(current_state, data_file.line.get_by_name(val_name))
+                    val = value.map_f(current_state, line.get_by_name(val_name))
                 else:
                     val, next_layer = value
                     value_hierarchy[val] = {}
-                    self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
+                    self.traverse(next_layer, line, current_state, value_hierarchy[val])
 
                 if val_name in value_hierarchy:
                     current_val = value_hierarchy[val_name]
@@ -105,7 +106,7 @@ class HReader:
 
         elif type(layer) is dict:
 
-            value, next_layer = layer.items()[0]
+            value, next_layer = list(layer.items())[0]
 
             if isinstance(value, StateValue):
                 val_name = value.name
@@ -115,27 +116,27 @@ class HReader:
                     raise KeyError(str(value.name) + " is not in state")
             elif isinstance(value, Value):
                 val_name = value.name
-                val = value.map_f(current_state, data_file.line.get_by_name(val_name))
+                val = value.map_f(current_state, line.get_by_name(val_name))
             else:
                 val, next_layer = value
                 value_hierarchy[val] = {}
-                self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
+                self.traverse(next_layer, line, current_state, value_hierarchy[val])
 
             if val in value_hierarchy:
                 new_hierarchy = {}
-                self.traverse(next_layer, data_file, current_state, new_hierarchy)
+                self.traverse(next_layer, line, current_state, new_hierarchy)
                 current_hierarchy = value_hierarchy[val]
                 merged_hierarchy = self.merge(next_layer, current_hierarchy, new_hierarchy)
                 value_hierarchy[val] = merged_hierarchy
 
             else:
                 value_hierarchy[val] = {}
-                self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
+                self.traverse(next_layer, line, current_state, value_hierarchy[val])
 
         else:
             val, next_layer = layer
             value_hierarchy[val] = {}
-            self.traverse(next_layer, data_file, current_state, value_hierarchy[val])
+            self.traverse(next_layer, line, current_state, value_hierarchy[val])
 
             #raise ValueError("Invalid hierarchy_spec structure")
 
@@ -167,33 +168,37 @@ class HReader:
         with open(data_file.file_name, mode) as file:
 
              for line in file:
+                try:
+                    data_file.line.set(line[:-1])
 
-                data_file.line.set(line[:-1])
+                    if data_file.header_lineno == lineno:
+                        data_file.line.set_header()
+                        lineno += 1
+                        continue
 
-                if data_file.header_lineno == lineno:
-                    data_file.line.set_header()
-                    lineno += 1
-                    continue
+                    if self.state != None:
+                        current_state.release()
+                        current_state.update(data_file.line)
+                        current_state.lock()
 
-                if self.state != None:
-                    current_state.release()
-                    current_state.update(data_file.line)
-                    current_state.lock()
+                    if not self.filter_f(current_state, data_file.line):
+                        lineno += 1
+                        continue
 
-                if not self.filter_f(current_state, data_file.line):
-                    lineno += 1
-                    continue
+                    if multi_hierarchy:
+                        for i, hierarchy_spec in enumerate(self.hierarchy_spec):
+                            if i >= len(value_hierarchy_list):
+                                value_hierarchy_list.append(value_hierarchy.copy())
+                            value_hierarchy_copy = value_hierarchy_list[i]
+                            self.traverse(hierarchy_spec, data_file, current_state, value_hierarchy_copy)
+                            value_hierarchy_list[i] = value_hierarchy_copy
 
-                if multi_hierarchy:
-                    for i, hierarchy_spec in enumerate(self.hierarchy_spec):
-                        if i >= len(value_hierarchy_list):
-                            value_hierarchy_list.append(value_hierarchy.copy())
-                        value_hierarchy_copy = value_hierarchy_list[i]
-                        self.traverse(hierarchy_spec, data_file, current_state, value_hierarchy_copy)
-                        value_hierarchy_list[i] = value_hierarchy_copy
+                    else:
+                        self.traverse(self.hierarchy_spec, data_file.line, current_state, value_hierarchy)
 
-                else:
-                    self.traverse(self.hierarchy_spec, data_file, current_state, value_hierarchy)
+                except (KeyError, ValueError):
+                    print("Error occurred when reading line" + str(lineno) + " of " + data_file.file_name)
+                    raise
 
                 lineno += 1
 
@@ -222,7 +227,7 @@ class HReader:
             final_value_hierarchy_list = []
 
             for data_file in data_files:
-                value_hierarchy_list, final_state = self.read(data_file= data_file, mode= mode, apply_post_map=True, carry_state= carry_state)
+                value_hierarchy_list, final_state = self.read(data_file, mode, carry_state)
 
                 for i, value_hierarchy in enumerate(value_hierarchy_list):
                     if i >= len(final_value_hierarchy_list):
@@ -231,13 +236,19 @@ class HReader:
                     final_value_hierarchy_list[i] = \
                         self.merge(self.hierarchy_spec[i], final_value_hierarchy, value_hierarchy, True, final_state)
 
+            self.clear_state()
             return final_value_hierarchy_list
 
         else:
             final_value_hierarchy = {}
+
             for data_file in data_files:
-                value_hierarchy, final_state = self.read(data_file= data_file, mode= mode, carry_state= carry_state)
+                value_hierarchy, final_state = self.read(data_file, mode, carry_state)
                 final_value_hierarchy = \
                     self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
 
+            self.clear_state()
             return final_value_hierarchy
+
+    def clear_state(self):
+        self.state = copy(self.__init_state)
