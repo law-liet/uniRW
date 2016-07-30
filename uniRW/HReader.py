@@ -202,6 +202,8 @@ class HReader:
 
                 lineno += 1
 
+
+
         if multi_hierarchy:
 
             if apply_post_map:
@@ -252,3 +254,4 @@ class HReader:
 
     def clear_state(self):
         self.state = copy(self.__init_state)
+

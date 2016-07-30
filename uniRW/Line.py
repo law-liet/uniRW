@@ -3,7 +3,7 @@ from re import split as resplit
 class Line:
 
     def __init__(self, delimiter, name_col_dict={}):
-        self.name_col_dict = name_col_dict
+        self.name_col_dict = name_col_dict.copy()
         self.delimiter = delimiter
         self.__line = None
 
@@ -25,6 +25,10 @@ class Line:
                 continue
             else:
                 self.name_col_dict[val] = i
+
+    def clear(self):
+        self.name_col_dict = {}
+        self.__line = None
 
 class OutputLine:
 

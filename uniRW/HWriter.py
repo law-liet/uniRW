@@ -3,7 +3,7 @@ from uniRW.Value import GeneralValue
 
 class HWriter:
 
-    def __init__(self, hierarchy_spec, value_line=[]):
+    def __init__(self, hierarchy_spec, value_line):
         self.hierarchy_spec = hierarchy_spec
         self.value_line = value_line
 
@@ -40,7 +40,9 @@ class HWriter:
             print(foreword_line, file=output)
         if out_file.header != []:
             header_line = out_file.line.get_line(out_file.header)
-            print(header_line, file=output, end='')
+        else:
+            header_line = out_file.line.get_line([value.name for value in self.value_line])
+        print(header_line, file=output, end='')
 
         value_lines = []
         self.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
