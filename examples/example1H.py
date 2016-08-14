@@ -4,8 +4,6 @@
 
 import uniRW as RW
 
-# This example is a rewrite of example1oo.py using the more general hierarchical approach.
-
 # example1.csv format:
 #
 #       # xxxxxx

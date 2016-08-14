@@ -33,7 +33,7 @@ class Reader:
 
             for line in file:
 
-                data_file.line.set(line[:-1])
+                data_file.line.store(line[:-1])
 
                 if data_file.header_lineno == lineno:
                     data_file.line.set_header()
