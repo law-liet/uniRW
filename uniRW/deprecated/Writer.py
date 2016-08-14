@@ -1,7 +1,9 @@
-from __future__ import print_function
 from __future__ import absolute_import
-from uniRW.Key import GeneralKey
+from __future__ import print_function
+
 from uniRW.Value import GeneralValue
+from uniRW.deprecated.Key import GeneralKey
+
 
 class Writer:
 

@@ -1,5 +1,6 @@
 from re import split as resplit
 
+
 class Line:
 
     def __init__(self, delimiter, name_col_dict={}):
@@ -20,7 +21,7 @@ class Line:
         self.__line = resplit(self.delimiter, line)
 
     def set_header(self):
-        for i,val in enumerate(self.__line):
+        for i, val in enumerate(self.__line):
             if val in self.name_col_dict:
                 continue
             else:
@@ -29,6 +30,7 @@ class Line:
     def clear(self):
         self.name_col_dict = {}
         self.__line = None
+
 
 class OutputLine:
 

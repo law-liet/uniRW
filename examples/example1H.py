@@ -131,7 +131,7 @@ def percentile_grade(file_name):
 
     rank        = RW.StateValue(name= 'rank', post_map_f= get_percentile, to_string= print_tuple)
     gradeBook2  = { name: [grade, rank] }
-    gradeReader = RW.HReader(hierarchy_spec=gradeBook2, state= state)
+    gradeReader = RW.HReader(hierarchy_spec= gradeBook2, state= state)
     gradeFile   = RW.DataFile(
         file_name= file_prefix + '_sorted.csv',
         line= line,
@@ -144,7 +144,7 @@ def percentile_grade(file_name):
         line= outputLine,
         header= ['Name','Grade','Rank','Percentile']
     )
-    gradeWriter = RW.HWriter(hierarchy_spec=gradeBook2, value_line= [name, grade, rank])
+    gradeWriter = RW.HWriter(hierarchy_spec= gradeBook2, value_line= [name, grade, rank])
     gradeWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade', reverse= True)
 
 if __name__ == '__main__':

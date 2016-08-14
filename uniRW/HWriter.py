@@ -1,5 +1,7 @@
 from __future__ import print_function
+
 from uniRW.Value import GeneralValue
+
 
 class HWriter:
 
@@ -49,7 +51,7 @@ class HWriter:
         if sort_by == None:
             sorted_lines = value_lines
         else:
-            sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by])
+            sorted_lines = sorted(value_lines, key= lambda v_dict: v_dict[sort_by], reverse= reverse)
 
         for line in sorted_lines:
             values = []

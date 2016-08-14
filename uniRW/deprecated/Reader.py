@@ -1,9 +1,11 @@
 from __future__ import absolute_import
-from uniRW.Key import Key, StateKey, GeneralKey
-from uniRW.Value import Value, StateValue
-from uniRW.State import State
-from uniRW.File import DataFile
+
 from copy import copy
+
+from uniRW.File import DataFile
+from uniRW.Value import Value, StateValue
+from uniRW.deprecated.Key import Key, StateKey, GeneralKey
+
 
 class Reader:
 

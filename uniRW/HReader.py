@@ -1,11 +1,13 @@
-from uniRW.Value import Value, StateValue, GeneralValue
-from uniRW.State import State
-from uniRW.File import DataFile
 from copy import copy
+
+from uniRW.File import DataFile
+from uniRW.State import State
+from uniRW.Value import Value, StateValue, GeneralValue
+
 
 class HReader:
 
-    def __init__(self, hierarchy_spec, state=None, filter_f=lambda _, x: True):
+    def __init__(self, hierarchy_spec, state=State({}), filter_f=lambda _, x: True):
         self.hierarchy_spec = hierarchy_spec
         self.state = state
         self.filter_f = filter_f
@@ -13,6 +15,7 @@ class HReader:
 
 
     def apply_post_map(self, layer, state, value_hierarchy):
+
         if type(layer) is list:
 
             for value in layer:
@@ -22,20 +25,19 @@ class HReader:
                     value_hierarchy[val_name] = val
                 else:
                     val, next_layer = value
-                    self.apply_post_map(next_layer,state,value_hierarchy[val])
-
+                    self.apply_post_map(next_layer, state, value_hierarchy[val])
 
         elif type(layer) is dict:
             value, next_layer = list(layer.items())[0]
             for val, _ in value_hierarchy.items():
                 self.apply_post_map(next_layer, state, value_hierarchy[val])
+
         else:
             val, next_layer = layer
             self.apply_post_map(next_layer,state,value_hierarchy[val])
 
 
-
-    def merge(self, layer, value_hierarchy1, value_hierarchy2, post=False, state=None):
+    def merge(self, layer, value_hierarchy1, value_hierarchy2, post=False, state=State({})):
         merged_hierarchy = value_hierarchy1.copy()
 
         if type(layer) is list:
@@ -68,6 +70,7 @@ class HReader:
                     if post:
                         self.apply_post_map(next_layer, state, next_val_layer2)
                     merged_hierarchy[val] = next_val_layer2
+
         else:
             val, next_layer = layer
             merged_hierarchy[val] = self.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
@@ -142,6 +145,14 @@ class HReader:
 
 
     def read(self, data_file, mode='r', apply_post_map=False, carry_state=False):
+        """
+
+        :param data_file (DataFile):
+        :param mode (str):
+        :param apply_post_map (bool):
+        :param carry_state (bool):
+        :return (dict, State):
+        """
 
         if not isinstance(data_file, DataFile):
             raise ValueError("Data file is not a DataFile object.")
@@ -149,21 +160,19 @@ class HReader:
         lineno = 0
         value_hierarchy = {}
         value_hierarchy_list = []
-        current_state = None
 
         if type(self.hierarchy_spec) is list:
             multi_hierarchy = True
         else:
             multi_hierarchy = False
 
-        if self.state != None:
-            if not isinstance(self.state, State):
-                raise ValueError("State is a State object")
+        if not isinstance(self.state, State):
+            raise ValueError("State is a State object")
 
-            if not carry_state:
-                current_state = copy(self.state)
-            else:
-                current_state = self.state
+        if not carry_state:
+            current_state = copy(self.state)
+        else:
+            current_state = self.state
 
         with open(data_file.file_name, mode) as file:
 
@@ -176,10 +185,9 @@ class HReader:
                         lineno += 1
                         continue
 
-                    if self.state != None:
-                        current_state.release()
-                        current_state.update(data_file.line)
-                        current_state.lock()
+                    current_state.release()
+                    current_state.update(data_file.line)
+                    current_state.lock()
 
                     if not self.filter_f(current_state, data_file.line):
                         lineno += 1
@@ -238,7 +246,6 @@ class HReader:
                     final_value_hierarchy_list[i] = \
                         self.merge(self.hierarchy_spec[i], final_value_hierarchy, value_hierarchy, True, final_state)
 
-            self.clear_state()
             return final_value_hierarchy_list
 
         else:
@@ -249,7 +256,6 @@ class HReader:
                 final_value_hierarchy = \
                     self.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state)
 
-            self.clear_state()
             return final_value_hierarchy
 
     def clear_state(self):

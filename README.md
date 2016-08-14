@@ -19,7 +19,7 @@ Suppose we want read a file named *example.csv* that looks like this:
     Bob,3.0
 
 ##### Method 1:
-```Python
+```python
 >>> grade_dict, _ = RW.read(
 ...     file_name= 'example.csv',
 ...     mode= 'r',
@@ -34,7 +34,7 @@ Suppose we want read a file named *example.csv* that looks like this:
 ```
 
 ##### Method 2:
-``` Python
+``` python
 >>> name = RW.Key(name= 'Name')
 >>> grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
 >>> gradeReader = RW.Reader(Key= name, Values= [grade])
@@ -47,7 +47,7 @@ Suppose we want read a file named *example.csv* that looks like this:
 
 ##### Method 3:
 `grade_file` is the same as defined at method 2 above.
-``` Python
+``` python
 >>> name = RW.Value(name= 'Name')
 >>> grade = RW.Value(name= 'Grade', map_f= RW.pureR(float))
 >>> gradeHReader = RW.HReader(hierarchy_spec= { name: [grade] })
@@ -59,7 +59,7 @@ Suppose we want read a file named *example.csv* that looks like this:
 Suppose we want to write `grade_dict` to a new file.
 
 ##### Method 1:
-```Python
+```python
 >>> RW.write(
 ...     file_name= 'new_example.csv',
 ...     mode= 'w',
@@ -74,7 +74,7 @@ Suppose we want to write `grade_dict` to a new file.
 ##### Method 2: 
 `name` and `grade` are the same as defined at method 2 above.
 
-```Python
+```python
 >>> outputLine = RW.OutputLine(delimiter= ',')
 >>> outputFile = RW.OutputFile(
 ...     file_name= 'new_example.csv',
@@ -88,7 +88,7 @@ Suppose we want to write `grade_dict` to a new file.
 ##### Method 3: 
 `name`, `grade` and `outputFile` are the same as defined at method 2 above.
 
-```Python
+```python
 >>> gradeHWriter = RW.HWriter(hierarchy_spec={ name: [grade] }, value_line= [name,grade])
 >>> gradeHWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade')
 ```
