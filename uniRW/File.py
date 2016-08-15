@@ -22,7 +22,6 @@ class DataFile(File):
 
     def __init__(self, file_name, line, header_lineno=-1):
         """Initialize a file object for reading.
-        Subclass of File.
 
         :param header_lineno (int): the line number (starting from 0) of the header of the file
         """
@@ -32,7 +31,7 @@ class DataFile(File):
         if not isfile(file_name):
             raise ValueError(str(file_name) + " is not a file or not found")
         self.header_lineno = header_lineno
-        self.__init_line = copy(line)
+        self.__init_line = copy(line)  # private copy of line
 
     def reset(self):
         self.line = copy(self.__init_line)
@@ -42,7 +41,6 @@ class OutputFile(File):
 
     def __init__(self, file_name, line, header=[], foreword=[], epilogue=[]):
         """Initialize a file object for writing.
-        Subclass of File.
 
         :param header ([str]): the header of file.
         :param foreword ([str]): the foreword of a file with each string as a line.

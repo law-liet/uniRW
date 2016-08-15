@@ -74,7 +74,6 @@ def sort_grade(file_name):
     outputFile = RW.OutputFile(
         file_name= '.'.join(file_name.split('.')[:-1]) + '_sorted.csv',
         line= outputLine,
-        header= ['Name','Grade']
     )
     gradeWriter = RW.HWriter(hierarchy_spec= gradeBook, value_line= [name, grade])
     gradeWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade', reverse= True)

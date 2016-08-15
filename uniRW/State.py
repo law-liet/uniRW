@@ -1,5 +1,4 @@
-from __future__ import absolute_import
-from __future__ import print_function
+from __future__ import absolute_import, print_function
 
 from uniRW.util import idenL
 
@@ -7,13 +6,13 @@ from uniRW.util import idenL
 class State:
 
     def __init__(self, init_state, update_func=idenL):
-        """Initialize a state for reading.
+        """Initialize a state for stateful file reading.
 
         :param init_state (dict): a dictionary (name => value) storing the initial state.
         :param update_func (State * Line -> ()): a function that update state after reading each line.
         """
         self.__state = init_state
-        self.__update = update_func
+        self.update_func = update_func
         self.__read_only = True
 
     def check(self, name):
@@ -34,9 +33,6 @@ class State:
         else:
             raise KeyError("Error: cannot change state")
 
-    def set_update(self, update_func):
-        self.__update = update_func
-
     def lock(self):
         self.__read_only = True
 
@@ -45,7 +41,7 @@ class State:
 
     def update(self, val):
         if not self.__read_only:
-            self.__update(self, val)
+            self.update_func(self, val)
         else:
             raise KeyError("Error: cannot change state")
 

@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-from __future__ import print_function
 
 from uniRW.util import idenR
 
@@ -7,9 +6,9 @@ from uniRW.util import idenR
 class GeneralValue:
 
     def __init__(self, name, to_string, map_f, reduce_f, post_map_f, post_reduce_f):
-        """Initialize a value structure for reading and writing.
+        """Initialize a value structure defining what and how to read and write
 
-        :param name (str): the name (in header) of a value.
+        :param name (str): the name (column name in header, or name of a state variable) of a value.
         :param to_string ('a -> str): a function turning a value to string for printing.
         :param map_f (State * 'a -> 'b): a function transforming a value (with access to state) during reading.
         :param reduce_f ('a * 'a -> 'a): a function reducing two values into one during reading.
@@ -28,17 +27,23 @@ class Value(GeneralValue):
 
     def __init__(self, name, to_string=str, map_f=idenR,
                  reduce_f=idenR, post_map_f=idenR, post_reduce_f=idenR):
-        """Initialize a value obtained from reading a line
+        """Initialize a value from a line
         Subclass of GeneralValue with default input.
         """
         GeneralValue.__init__(self, name, to_string, map_f, reduce_f, post_map_f, post_reduce_f)
+
+    def state_value(self):
+        return StateValue(self.name, self.to_string, self.map_f, self.reduce_f, self.post_map_f, self.post_reduce_f)
 
 
 class StateValue(GeneralValue):
 
     def __init__(self, name, to_string=str, map_f=idenR,
                  reduce_f=idenR, post_map_f=idenR, post_reduce_f=idenR):
-        """Initialize a value obtained from state
+        """Initialize a value from state
         Subclass of GeneralValue with default input.
         """
         GeneralValue.__init__(self, name, to_string,  map_f, reduce_f, post_map_f, post_reduce_f)
+
+    def value(self):
+        return Value(self.name, self.to_string, self.map_f, self.reduce_f, self.post_map_f, self.post_reduce_f)

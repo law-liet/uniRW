@@ -7,7 +7,7 @@ class Line:
         """Initialize a line object for reading.
 
         :param delimiter (str): a regular expression that splits a raw data line.
-        :param name_col_dict: a dictionary (name => column) that maps value name to column number.
+        :param name_col_dict (dict): a dictionary (name => column) that maps value name to column number.
         """
         self.name_col_dict = name_col_dict.copy()
         self.delimiter = delimiter
