@@ -25,7 +25,7 @@ import uniRW as RW
 #          - name the columns according to header
 #               ("Name" for column 0, "Grade" for column 1)
 #          - delimiter ','
-#   Hierarchy - { name : grade }
+#   Hierarchy - { name : [grade] }
 #   (Note that we no longer need Key here, since the key-value relation can be defined by a hierarchy_spec of values)
 #
 

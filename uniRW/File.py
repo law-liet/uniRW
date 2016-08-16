@@ -12,10 +12,10 @@ class File:
         """Initialize a file object.
 
         :param file_name (str): name.
-        :param line (Line or OutputLine): a Line or OuputLine object descrbing a line in this file.
+        :param line (Line or OutputLine): a Line or OutputLine object describing a line in this file.
         """
         self.file_name = file_name
-        self.line = copy(line) # prevent bugs in sharing the same Line object
+        self.line = copy(line)  # prevent bugs in sharing the same Line object
 
 
 class DataFile(File):

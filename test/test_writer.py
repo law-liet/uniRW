@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 import unittest
-from uniRW.Hierarchy import *
+from uniRW import HWriter
 
 
-class TestHierarchy(unittest.TestCase):
+class TestWriter(unittest.TestCase):
     pass
 
 if __name__ == '__main__':

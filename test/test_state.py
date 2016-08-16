@@ -1,8 +1,9 @@
 from __future__ import absolute_import
 import unittest
-from uniRW.util import *
+from uniRW.State import State
 
-class UtilTest(unittest.TestCase):
+
+class TestState(unittest.TestCase):
     pass
 
 if __name__ == '__main__':

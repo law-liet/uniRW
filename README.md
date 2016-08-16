@@ -1,4 +1,4 @@
-# uniRW [![pypi](https://badge.fury.io/py/uniRW.svg)](https://badge.fury.io/py/uniRW)
+# uniRW [![pypi](https://badge.fury.io/py/uniRW.svg)](https://badge.fury.io/py/uniRW) 
 **uniRW** is a universal reader & writer package for complex, stateful data file processing.
 
 * **Declarative:** Declare value structures and hierarchies, declare value interactions (map, filter, reduce), declare the state to be kept track of, declare the file structure, and **uniRW** will process the data in a predictable way.  
@@ -7,7 +7,7 @@
 
 
 # Installation
-Easy to install with [pip](https://pip.pypa.io/en/stable/)
+Easy to install with [pip](https://pip.pypa.io/en/stable/).
 ```
 pip install uniRW
 ```
@@ -22,7 +22,7 @@ Import the package:
 
 ## Read
 
-Suppose we want read a file named *example.csv* that looks like this:
+Suppose we want to read a file named *example.csv* that looks like this:
 
     Name,Major,Grade
     Alice,Math,4.0
@@ -33,7 +33,7 @@ Define the value structures and hierarchy:
 ``` python
 >>> name = RW.Value(name= 'Name')
 >>> major = RW.Value(name= 'Major')
->>> grade = RW.Value(name= 'Grade', map_f= lambda _,x: float(x))
+>>> grade = RW.Value(name= 'Grade', map_f= lambda _, x: float(x))
 >>> hierarchy = {name: [major, grade]}
 ```
 
@@ -64,7 +64,7 @@ Suppose we want to write the above `grade_dict` to a new file *new_example.csv* 
 Define the value line (with `name`, `major`, and `grade` the same as above):
 
 ```python
->>> value_line= [name, major, grade]
+>>> value_line = [name, major, grade]
 ```
 
 Define the output file:
@@ -94,4 +94,4 @@ See [wiki](https://github.com/law-liet/uniRW/wiki) for documentation.
 See [Change Log](https://github.com/law-liet/uniRW/blob/master/change_log.md).
 
 # License
-Read the [License](https://github.com/law-liet/uniRW/blob/master/LICENSE) file.
+Read [License](https://github.com/law-liet/uniRW/blob/master/LICENSE) file.
