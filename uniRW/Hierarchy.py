@@ -134,10 +134,10 @@ class Hierarchy:
         :param current_state (State): the current state maybe used in map.
         :param value_hierarchy (dict): the dictionary to store values.
 
-        Simple Example:
+        Example:
             Read (line):
                 "Alice,Math,1,4.0"
-            Store (value_hierarchy):
+            Add to (value_hierarchy) and merge if necessary:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}}
 
         """
@@ -211,7 +211,7 @@ class Hierarchy:
         :param state (State): the current state maybe used in map or post_map
         :return (dict): the merged value hierarchy
 
-        Simple Example:
+        Example 1:
             (value_hierarchy1):
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}}
             (value_hierarchy2):
@@ -219,6 +219,15 @@ class Hierarchy:
 
             Merge:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}, 'CS': {'Rank': 2, 'Grade': 3.9}}}
+
+        Example 2: (Suppose reduce_f of grade is max, reduce_f of rank is min)
+            (value_hierarchy1):
+                {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}}
+            (value_hierarchy2):
+                {'Alice': {'Math': {'Rank': 2, 'Grade': 3.9}}}
+
+            Merge:
+                {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}
 
         """
         merged_hierarchy = value_hierarchy1.copy()
@@ -280,26 +289,25 @@ class Hierarchy:
                     {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.9}
                 ]
         """
-        for root, next in value_hierarchy.items():
+        if type(hierarchy_spec) is list:  # Type 1
+            current_value_line = value_line
+            for value in hierarchy_spec:
+                if isinstance(value, GeneralValue):
+                    # at "leaf", store (value name => value) in current value line
+                    current_value_line[value.name] = value_hierarchy[value.name]
+                else:  # Type 3: at "node", go to next layer
+                    val, next_layer = value
+                    cls.flatten(next_layer, value_hierarchy[val], value_lines, current_value_line)
+            value_lines.append(current_value_line)  # finish a "branch"
 
-            if type(hierarchy_spec) is list:  # Type 1
-                current_value_line = value_line
-                for value in hierarchy_spec:
-                    if isinstance(value, GeneralValue):
-                        # at "leaf", store (value name => value) in current value line
-                        current_value_line[value.name] = value_hierarchy[value.name]
-                    else:  # Type 3: at "node", go to next layer
-                        val, next_layer = value
-                        cls.flatten(next_layer, next, value_lines, current_value_line)
-
-            elif type(hierarchy_spec) is dict:  # Type 2: at "node"
+        elif type(hierarchy_spec) is dict:  # Type 2: at "node"
+            for root, next in value_hierarchy.items():
                 current_value_line = value_line.copy()  # copy the current value line to different sub-hierarchies
                 value, next_layer = list(hierarchy_spec.items())[0]
                 current_value_line[value.name] = root  # store the current "node"
                 cls.flatten(next_layer, next, value_lines, current_value_line)  # flatten next layer
-                value_lines.append(current_value_line)  # there is a "branch" if there is a sub-hierarchy
 
-            else:  # Type 3: at "node", go to next layer
-                current_value_line = value_line
-                val, next_layer = hierarchy_spec
-                cls.flatten(next_layer, next, value_lines, current_value_line)
+        else:  # Type 3: at "node", go to next layer
+            current_value_line = value_line
+            val, next_layer = hierarchy_spec
+            cls.flatten(next_layer, value_hierarchy[val], value_lines, current_value_line)

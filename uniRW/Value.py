@@ -11,9 +11,9 @@ class GeneralValue:
         :param name (str): the name (column name in header, or name of a state variable) of a value.
         :param to_string ('a -> str): a function turning a value to string for printing.
         :param map_f (State * 'a -> 'b): a function transforming a value (with access to state) during reading.
-        :param reduce_f ('a * 'a -> 'a): a function reducing two values into one during reading.
+        :param reduce_f ('a * 'a -> 'a): an associative function reducing two values into one during reading.
         :param post_map_f (State * 'a -> 'b): a function transforming a value (with access to state) after reading.
-        :param post_reduce_f ('a * 'a -> 'a): a function reducing two values into one after reading.
+        :param post_reduce_f ('a * 'a -> 'a): an associative function reducing two values into one after reading.
         """
         self.name = name
         self.map_f = map_f

@@ -1,8 +1,8 @@
 # uniRW [![pypi](https://badge.fury.io/py/uniRW.svg)](https://badge.fury.io/py/uniRW) 
 **uniRW** is a universal reader & writer package for complex, stateful data file processing.
 
-* **Declarative:** Declare value structures and hierarchies, declare value interactions (map, filter, reduce), declare the state to be kept track of, declare the file structure, and **uniRW** will process the data in a predictable way.  
-* **Reusable:** Reuse a reader/writer in reading/writing multiple files. Reuse common value structures in different readers/writers. Extract common patterns in input file and standardize output file.
+* **Declarative:** Declare value structures and hierarchies, declare the state to be kept track of, declare the file structure, and **uniRW** will take care the details and process data in a predictable way. Declarative processing enables easy debugging and focuses on logic. 
+* **Reusable:** Reuse a reader/writer in reading/writing multiple files. Reuse common value structures in different readers/writers. Compose simple hierarchies into more complex hierarchies. Focus on common patterns in input files and standardize output files.
 * **Universal:** Process any files with lines split by any regular expressions. Apply user-defined map, filter and reduce, keep track of evolving state during processing. Store and output data in a user-defined hierarchy of values.  
 
 
@@ -57,9 +57,9 @@ Create the reader and read the file:
 
 Suppose we want to write the above `grade_dict` to a new file *new_example.csv* that looks like this:
 
-    Name    Major   Grade
-    Bob     CS      3.0
-    Alice   Math    4.0
+    Name,Major,Grade
+    Bob,CS,3.0
+    Alice,Math,4.0
 
 Define the value line (with `name`, `major`, and `grade` the same as above):
 
@@ -70,7 +70,7 @@ Define the value line (with `name`, `major`, and `grade` the same as above):
 Define the output file:
 
 ```python
->>> output_line = RW.OutputLine(delimiter= '\t')
+>>> output_line = RW.OutputLine(delimiter= ',')
 >>> output_file = RW.OutputFile(file_name= 'new_example.csv', line= output_line)
 ```
 

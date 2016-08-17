@@ -33,7 +33,11 @@ name  = RW.Value(name='Name')
 grade = RW.Value(name='Grade', map_f= RW.pureR(float), reduce_f= max)
 line  = RW.Line(delimiter=',')
 outputLine = RW.OutputLine(delimiter=',')
-gradeBook = {name: [grade]}
+gradeBook = {
+    name: [
+        grade
+    ]
+}
 
 #
 # Suppose we want to read the grade file example1.csv and only record
@@ -127,7 +131,13 @@ def percentile_grade(file_name):
         return str(a) + ',' + str(b)
 
     rank        = RW.StateValue(name= 'rank', post_map_f= get_percentile, to_string= print_tuple)
-    gradeBook2  = { name: [grade, rank] }
+    gradeBook2  = {
+        name: [
+            grade,
+            rank
+        ]
+    }
+
     gradeReader = RW.HReader(hierarchy_spec= gradeBook2, state= state)
     gradeFile   = RW.DataFile(
         file_name= file_prefix + '_sorted.csv',
@@ -141,8 +151,10 @@ def percentile_grade(file_name):
         line= outputLine,
         header= ['Name','Grade','Rank','Percentile']
     )
+
     gradeWriter = RW.HWriter(hierarchy_spec= gradeBook2, value_line= [name, grade, rank])
     gradeWriter.write(out_file= outputFile, value_hierarchy= grade_dict, sort_by= 'Grade', reverse= True)
+
 
 if __name__ == '__main__':
     percentile_grade('./data/'+'example1.csv')

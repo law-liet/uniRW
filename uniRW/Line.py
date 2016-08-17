@@ -45,13 +45,14 @@ class Line:
 
 class OutputLine:
 
-    def __init__(self, delimiter, end_char='\n'):
+    def __init__(self, delimiter, start_char='', end_char='\n'):
         """Initialize a outputLine object for writing.
 
         :param delimiter (str): the delimiter of a line.
         :param end_char: the ending character of a line.
         """
         self.delimiter = delimiter
+        self.start_char = start_char
         self.end_char = end_char
 
     def get_line(self, values):
@@ -60,4 +61,4 @@ class OutputLine:
         :param values ([str]): a list of strings
         :return (str): the result string
         """
-        return self.delimiter.join(values) + self.end_char
+        return self.start_char + self.delimiter.join(values) + self.end_char

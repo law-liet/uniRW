@@ -2,7 +2,9 @@
 setup.cfg
 setup.py
 test/test_hierarchy.py
-test/test_util.py
+test/test_reader.py
+test/test_state.py
+test/test_writer.py
 uniRW/File.py
 uniRW/HReader.py
 uniRW/HWriter.py
