@@ -31,8 +31,8 @@ def average(num_list):
     return round(sum(num_list) / len(num_list), 2)
 # end helper
 
-name   = RW.Value(name= 'Name')
-course = RW.Value(name= 'Course')
+name   = RW.Value('Name')
+course = RW.Value('Course')
 grade  = RW.Value(  # record a list grades
     name      = 'Grade',
     map_f     = RW.pureR(lambda x: [float(x)]),  # convert a grade to a list
@@ -51,7 +51,7 @@ grade_book = {
 
 
 def read_grade(file_names):
-    comma_line = RW.Line(delimiter=',')
+    comma_line = RW.Line(',')
 
     def grade_file(file_name):
         return RW.DataFile(file_name, comma_line, header_lineno= 0)
@@ -63,7 +63,7 @@ def read_grade(file_names):
 
 
 def write_grade(file_name, grade_dict):
-    comma_output_line = RW.OutputLine(delimiter=',')
+    comma_output_line = RW.OutputLine(',')
     output_file = RW.OutputFile(
         file_name,
         comma_output_line,

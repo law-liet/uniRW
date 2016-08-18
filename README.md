@@ -31,24 +31,21 @@ Suppose we want to read a file named *example.csv* that looks like this:
 Define the value structures and hierarchy:
 
 ``` python
->>> name = RW.Value(name= 'Name')
->>> major = RW.Value(name= 'Major')
->>> grade = RW.Value(name= 'Grade', map_f= lambda _, x: float(x))
+>>> name, major = RW.Value('Name'), RW.Value('Major')
+>>> grade = RW.Value('Grade', map_f= lambda _, x: float(x))
 >>> hierarchy = {name: [major, grade]}
 ```
 
 Define the input file:
 
 ```python
->>> line = RW.Line(delimiter= ',')
->>> grade_file = RW.DataFile(file_name= 'example1.csv', line= line, header_lineno= 0)
+>>> grade_file = RW.DataFile('example1.csv', RW.Line(','), 0)
 ```
 
 Create the reader and read the file:
 
 ```python
->>> grade_reader = RW.HReader(hierarchy_spec= hierarchy)
->>> grade_dict, _ = grade_reader.read(data_file= grade_file)
+>>> grade_dict, _ = RW.HReader(hierarchy).read(grade_file)
 >>> print(grade_dict)
 {'Alice': {'Major': 'Math', 'Grade': 4.0}, 'Bob': {'Major': 'CS', 'Grade': 3.0}}
 ```
@@ -70,15 +67,13 @@ Define the value line (with `name`, `major`, and `grade` the same as above):
 Define the output file:
 
 ```python
->>> output_line = RW.OutputLine(delimiter= ',')
->>> output_file = RW.OutputFile(file_name= 'new_example.csv', line= output_line)
+>>> output_file = RW.OutputFile('new_example.csv', RW.OutputLine(','))
 ```
 
 Create the writer and write the file (with `hierarchy` the same as above):
 
 ```python
->>> grade_writer = RW.HWriter(hierarchy_spec= hierarchy, value_line= value_line)
->>> grade_writer.write(out_file= output_file, value_hierarchy= grade_dict, sort_by= 'Grade')
+>>> RW.HWriter(hierarchy, value_line).write(output_file, grade_dict, sort_by= 'Grade')
 ```
 
 # Documentation
