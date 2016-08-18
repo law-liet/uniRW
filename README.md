@@ -39,7 +39,7 @@ Define the value structures and hierarchy:
 Define the input file:
 
 ```python
->>> grade_file = RW.DataFile('example1.csv', RW.Line(','), 0)
+>>> grade_file = RW.DataFile('example1.csv', RW.Line(','), header_lineno= 0)
 ```
 
 Create the reader and read the file:

@@ -57,22 +57,18 @@ def read_grade(file_names):
         return RW.DataFile(file_name, comma_line, header_lineno= 0)
 
     grade_files = map(grade_file, file_names)  # create the list of DataFile objects we want.
-    grade_reader = RW.HReader(grade_book)
-    grade_dict = grade_reader.readAll(grade_files)
+    grade_dict = RW.HReader(grade_book).readAll(grade_files)
     return grade_dict
 
 
 def write_grade(file_name, grade_dict):
-    comma_output_line = RW.OutputLine(',')
     output_file = RW.OutputFile(
         file_name,
-        comma_output_line,
+        RW.OutputLine(','),
         foreword= ['# Average Grade of Exams for Each Subject']
     )
 
-    value_line = [name, course, grade]
-    grade_writer = RW.HWriter(grade_book, value_line)
-    grade_writer.write(output_file, grade_dict)
+    RW.HWriter(grade_book, [name, course, grade]).write(output_file, grade_dict)
 
 
 if __name__ == "__main__":
