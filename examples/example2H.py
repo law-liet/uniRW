@@ -1,18 +1,18 @@
 # install uniRW by running: pip install uniRW
 # slightly more complex data processing for multiple files
-# run this file: python example1H.py
+# run this file: python example2H.py
 
-from functools import reduce
 from glob import glob
 from operator import add
 
 import uniRW as RW
 
+
 # example2*.csv format:
 #
 #       Name,Course,Exam,Grade
-#       Studnet1,Course1,Exam1,Grade1
-#       Studnet1,Course1,Exam2,Grade2
+#       Student1,Course1,Exam1,Grade1
+#       Student1,Course1,Exam2,Grade2
 #       ...
 #       Student1,Course1,ExamN,GradeN
 #       Student2,Course1,Exam1,Grade1
@@ -28,7 +28,7 @@ import uniRW as RW
 
 # helper
 def average(num_list):
-    return round(reduce(lambda x, y: x + y, num_list) / len(num_list), 2)
+    return round(sum(num_list) / len(num_list), 2)
 # end helper
 
 name   = RW.Value(name= 'Name')
