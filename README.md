@@ -32,14 +32,14 @@ Define the value structures and hierarchy:
 
 ``` python
 >>> name, major = RW.Value('Name'), RW.Value('Major')
->>> grade = RW.Value('Grade', map_f= lambda _, x: float(x))
+>>> grade = RW.Value('Grade', map_f=lambda _, x: float(x))
 >>> hierarchy = {name: [major, grade]}
 ```
 
 Define the input file:
 
 ```python
->>> grade_file = RW.DataFile('example1.csv', RW.Line(','), header_lineno= 0)
+>>> grade_file = RW.DataFile('example1.csv', RW.Line(','), header_lineno=0)
 ```
 
 Create the reader and read the file:
@@ -73,7 +73,7 @@ Define the output file:
 Create the writer and write the file (with `hierarchy` the same as above):
 
 ```python
->>> RW.HWriter(hierarchy, value_line).write(output_file, grade_dict, sort_by= 'Grade')
+>>> RW.HWriter(hierarchy, value_line).write(output_file, grade_dict, sort_by='Grade')
 ```
 
 # Documentation

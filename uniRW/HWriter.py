@@ -29,6 +29,14 @@ class HWriter:
         :param sort_by (str): the name of a value to sort by
         :param reverse: sort in reverse order or not
         """
+
+        value_lines = []
+
+        # flatten the value hierarchy (dictionary)
+        Hierarchy.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
+        self.write_flat(out_file, value_lines, mode, sort_by, reverse)
+
+    def write_flat(self, out_file, value_lines, mode, sort_by, reverse):
         output = open(out_file.file_name, mode)
 
         # print foreword
@@ -36,22 +44,17 @@ class HWriter:
             print(foreword_line, file=output)
 
         # print header
-        if out_file.header != []:
+        if out_file.header:
             header_line = out_file.line.get_line(out_file.header)
         else:
             header_line = out_file.line.get_line([value.name for value in self.value_line])
         print(header_line, file=output, end='')
 
-        value_lines = []
-
-        # flatten the value hierarchy (dictionary)
-        Hierarchy.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
-
         # sort the lines
-        if sort_by == None:
+        if sort_by:
             sorted_lines = value_lines
         else:
-            sorted_lines = sorted(value_lines, key= lambda v_dict: v_dict[sort_by], reverse= reverse)
+            sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by], reverse=reverse)
 
         # print value with respect to value line specification
         for line in sorted_lines:

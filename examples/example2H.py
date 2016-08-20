@@ -7,7 +7,6 @@ from operator import add
 
 import uniRW as RW
 
-
 # example2*.csv format:
 #
 #       Name,Course,Exam,Grade
@@ -26,18 +25,17 @@ import uniRW as RW
 # We want to compute the average grade of each course for each student.
 #
 
-# helper
+
 def average(num_list):
     return round(sum(num_list) / len(num_list), 2)
-# end helper
 
-name   = RW.Value('Name')
+name = RW.Value('Name')
 course = RW.Value('Course')
-grade  = RW.Value(  # record a list grades
-    name      = 'Grade',
-    map_f     = RW.pureR(lambda x: [float(x)]),  # convert a grade to a list
-    reduce_f  = add,  # append the lists
-    post_map_f= RW.pureR(average)  # compute the average of the list of grades after reading all data
+grade = RW.Value(  # record a list of grades
+    name='Grade',
+    map_f=RW.pureR(lambda x: [float(x)]),  # convert a grade to a list
+    reduce_f=add,  # append the lists
+    post_map_f=RW.pureR(average)  # compute the average of the list of grades after reading all data
 )
 
 # We want the mapping (name => (course => grade)), like {'Alice': {'Math': {'grade': 4.0}}}
@@ -54,7 +52,7 @@ def read_grade(file_names):
     comma_line = RW.Line(',')
 
     def grade_file(file_name):
-        return RW.DataFile(file_name, comma_line, header_lineno= 0)
+        return RW.DataFile(file_name, comma_line, header_lineno=0)
 
     grade_files = map(grade_file, file_names)  # create the list of DataFile objects we want.
     grade_dict = RW.HReader(grade_book).readAll(grade_files)
@@ -65,9 +63,8 @@ def write_grade(file_name, grade_dict):
     output_file = RW.OutputFile(
         file_name,
         RW.OutputLine(','),
-        foreword= ['# Average Grade of Exams for Each Subject']
+        foreword=['# Average Grade of Exams for Each Subject']
     )
-
     RW.HWriter(grade_book, [name, course, grade]).write(output_file, grade_dict)
 
 

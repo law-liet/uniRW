@@ -25,7 +25,6 @@ class HReader:
         self.filter_f = filter_f
         self.__init_state = copy(self.state)
 
-
     def read(self, data_file, mode='r', apply_post_map=False, carry_state=False):
         """Read a file the store the data with respect to the hierarchy specification of values.
 

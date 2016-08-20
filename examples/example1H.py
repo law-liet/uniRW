@@ -30,7 +30,7 @@ import uniRW as RW
 #
 
 name  = RW.Value('Name')
-grade = RW.Value('Grade', map_f= RW.pureR(float), reduce_f= max)
+grade = RW.Value('Grade', map_f=RW.pureR(float), reduce_f=max)
 line  = RW.Line(',')
 outputLine = RW.OutputLine(',')
 gradeBook = {
@@ -38,6 +38,7 @@ gradeBook = {
         grade
     ]
 }
+
 
 #
 # Suppose we want to read the grade file example1.csv and only record
@@ -57,6 +58,7 @@ def read_grade(file_name):
     grade_dict, _ = gradeReader.read(gradeFile)
     return grade_dict
 
+
 #
 # Suppose we want to create a file to sort the students by their grades.
 # Idea:
@@ -69,18 +71,16 @@ def read_grade(file_name):
 #         ...
 #         StudentN,GradeN
 #
-#   Header: Name,Grade
 #   Sort by: Grade (Descending)
 #
-def sort_grade(file_name):
-    grade_dict = read_grade(file_name)
-
+def sort_grade(file_name, grade_dict):
     outputFile = RW.OutputFile(
-        file_name= '.'.join(file_name.split('.')[:-1]) + '_sorted.csv',
-        line= outputLine,
+        '.'.join(file_name.split('.')[:-1]) + '_sorted.csv',
+        outputLine
     )
     gradeWriter = RW.HWriter(gradeBook, [name, grade])
-    gradeWriter.write(outputFile, grade_dict, sort_by= 'Grade', reverse= True)
+    gradeWriter.write(outputFile, grade_dict, sort_by='Grade', reverse=True)
+
 
 #
 # Suppose we want to create a file with each student's grade, rank and percentile.
@@ -112,7 +112,7 @@ def sort_grade(file_name):
 # This method is for illustration purpose. It is not the simplest approach.
 #
 def percentile_grade(file_name):
-    sort_grade(file_name)
+    sort_grade(file_name, read_grade(file_name))
     file_prefix = '.'.join(file_name.split('.')[:-1])
 
     def update(state):
@@ -120,41 +120,36 @@ def percentile_grade(file_name):
 
     state = RW.State({'rank': 0}, RW.pureL(update))
 
-    def get_percentile(state, rank):
+    def get_percentile(state, rank):  # calculate percentage based on rank
         total = state.get('rank')
         reverse_rank = total - rank + 1
         percentile = round(float(reverse_rank - 1) / float(total) * 100, 2)
         return rank, percentile
 
     def print_tuple(val):
-        a,b = val
+        a, b = val
         return str(a) + ',' + str(b)
 
-    rank        = RW.StateValue('rank', post_map_f= get_percentile, to_string= print_tuple)
-    gradeBook2  = {
+    rank = RW.StateValue('rank', post_map_f=get_percentile, to_string=print_tuple)
+    gradeBook2 = {
         name: [
             grade,
             rank
         ]
     }
 
-    gradeReader = RW.HReader(gradeBook2, state)
-    gradeFile   = RW.DataFile(
-        file_prefix + '_sorted.csv',
-        line,
-        header_lineno= 0
-    )
-    grade_dict, _ = gradeReader.read(gradeFile, apply_post_map= True)
+    gradeFile = RW.DataFile(file_prefix + '_sorted.csv', line, header_lineno=0)
+    grade_dict, _ = RW.HReader(gradeBook2, state).read(gradeFile, apply_post_map=True)
 
     outputFile = RW.OutputFile(
         file_prefix + '_percentile.csv',
         outputLine,
-        header= ['Name','Grade','Rank','Percentile']
+        header=['Name', 'Grade', 'Rank', 'Percentile']
     )
 
     gradeWriter = RW.HWriter(gradeBook2, [name, grade, rank])
-    gradeWriter.write(outputFile, grade_dict, sort_by= 'Grade', reverse= True)
+    gradeWriter.write(outputFile, grade_dict, sort_by='Grade', reverse=True)
 
 
 if __name__ == '__main__':
-    percentile_grade('./data/'+'example1.csv')
+    percentile_grade('data/'+'example1.csv')
