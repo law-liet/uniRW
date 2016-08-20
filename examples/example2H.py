@@ -55,7 +55,7 @@ def read_grade(file_names):
         return RW.DataFile(file_name, comma_line, header_lineno=0)
 
     grade_files = map(grade_file, file_names)  # create the list of DataFile objects we want.
-    grade_dict = RW.HReader(grade_book).readAll(grade_files)
+    grade_dict = RW.HReader(grade_book).read_all(grade_files)
     return grade_dict
 
 

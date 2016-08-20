@@ -51,10 +51,10 @@ gradeBook = {
 
 def read_grade(file_name):
     def skip_first_line(line):
-        return not line.get_by_index(0)[0] == '#'
+        return not line[0][0] == '#'
 
-    gradeFile     = RW.DataFile(file_name, line, header_lineno= 1)
-    gradeReader   = RW.HReader(gradeBook, filter_f= RW.pureR(skip_first_line))
+    gradeFile     = RW.DataFile(file_name, line, header_lineno=1)
+    gradeReader   = RW.HReader(gradeBook, filter_f=RW.pureR(skip_first_line))
     grade_dict, _ = gradeReader.read(gradeFile)
     return grade_dict
 
@@ -116,12 +116,12 @@ def percentile_grade(file_name):
     file_prefix = '.'.join(file_name.split('.')[:-1])
 
     def update(state):
-        state.set('rank', state.get('rank') + 1)
+        state['rank'] += 1
 
     state = RW.State({'rank': 0}, RW.pureL(update))
 
     def get_percentile(state, rank):  # calculate percentage based on rank
-        total = state.get('rank')
+        total = state['rank']
         reverse_rank = total - rank + 1
         percentile = round(float(reverse_rank - 1) / float(total) * 100, 2)
         return rank, percentile

@@ -109,7 +109,7 @@ class HReader:
 
             return value_hierarchy, current_state
 
-    def readAll(self, data_files, mode='r', carry_state=False):
+    def read_all(self, data_files, mode='r', carry_state=False):
         """Read multiple files and store the data with respect to the hierarchy specification of values.
 
         :param data_files: list of files

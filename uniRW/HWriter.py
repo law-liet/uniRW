@@ -23,13 +23,12 @@ class HWriter:
     def write(self, out_file, value_hierarchy, mode='w', sort_by=None, reverse=False):
         """Write a file according to value line specification.
 
-        :param out_file (OutputFile): the file to write
-        :param value_hierarchy (dict): a value hierarchy (dictionary) for writing to the file
+        :param out_file (OutputFile): the file to write.
+        :param value_hierarchy (dict): a value hierarchy (dictionary) for writing to the file.
         :param mode (str): writing mode ("w", "w+", ...)
-        :param sort_by (str): the name of a value to sort by
-        :param reverse: sort in reverse order or not
+        :param sort_by (str): the name of a value to sort by.
+        :param reverse: sort in reverse order or not.
         """
-
         value_lines = []
 
         # flatten the value hierarchy (dictionary)
@@ -37,6 +36,8 @@ class HWriter:
         self.write_flat(out_file, value_lines, mode, sort_by, reverse)
 
     def write_flat(self, out_file, value_lines, mode, sort_by, reverse):
+        """Write a file according to value specification, with a flatten value hierarchy.
+        """
         output = open(out_file.file_name, mode)
 
         # print foreword
@@ -51,7 +52,7 @@ class HWriter:
         print(header_line, file=output, end='')
 
         # sort the lines
-        if sort_by:
+        if not sort_by:
             sorted_lines = value_lines
         else:
             sorted_lines = sorted(value_lines, key=lambda v_dict: v_dict[sort_by], reverse=reverse)

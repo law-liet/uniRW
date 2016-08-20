@@ -130,7 +130,7 @@ class Hierarchy:
         """Store the values in the line in the input dictionary by traversing the hierarchy.
 
         :param hierarchy_spec: a valid hierarchy (or sub-hierarchy).
-        :param line (Line): the current line read.
+        :param line (Line or dict): the current line read.
         :param current_state (State): the current state maybe used in map.
         :param value_hierarchy (dict): the dictionary to store values.
 
@@ -148,11 +148,11 @@ class Hierarchy:
                 if isinstance(value, StateValue):
                     # get value from state and apply map
                     val_name = value.name
-                    val = value.map_f(current_state, current_state.get(val_name))
+                    val = value.map_f(current_state, current_state[val_name])
                 elif isinstance(value, Value):
                     # get value from line and apply map
                     val_name = value.name
-                    val = value.map_f(current_state, line.get_by_name(val_name))
+                    val = value.map_f(current_state, line[val_name])
                 else:
                     # Type 3: store value and go to next layer
                     val, next_layer = value
@@ -174,11 +174,11 @@ class Hierarchy:
             if isinstance(value, StateValue):
                 # get value from state and apply map
                 val_name = value.name
-                val = value.map_f(current_state, current_state.get(val_name))
+                val = value.map_f(current_state, current_state[val_name])
             elif isinstance(value, Value):
                 # get value from line and apply map
                 val_name = value.name
-                val = value.map_f(current_state, line.get_by_name(val_name))
+                val = value.map_f(current_state, line[val_name])
             else:
                 raise ValueError("Invalid hierarchy specification.")
 

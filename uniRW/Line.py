@@ -13,6 +13,12 @@ class Line:
         self.delimiter = delimiter
         self.__line = []
 
+    def __getitem__(self, item):
+        if type(item) is int:
+            return self.get_by_index(item)
+        else:
+            return self.get_by_name(item)
+
     def get_by_name(self, name):
         if name in self.name_col_dict:
             return self.__line[self.name_col_dict[name]]

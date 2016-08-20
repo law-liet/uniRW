@@ -15,7 +15,13 @@ class State:
         self.update_func = update_func
         self.__read_only = True
 
-    def check(self, name):
+    def __getitem__(self, name):
+        return self.get(name)
+
+    def __setitem__(self, name, value):
+        return self.set(name, value)
+
+    def __contains__(self, name):
         return name in self.__state
 
     def get(self, name):
