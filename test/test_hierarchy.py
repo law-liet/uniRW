@@ -182,7 +182,6 @@ class TestHierarchy(unittest.TestCase):
                                        'Bob': {'CS': {'Grade': 3.5, 'Rank': 2},
                                                'Math': {'Grade': 4.0, 'Rank': 1}}})
 
-
     def test_flatten(self):
         name = self.name
         subject = self.subject
@@ -198,7 +197,8 @@ class TestHierarchy(unittest.TestCase):
         value_dict22 = {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}, 'CS': {'Rank': 2, 'Grade': 3.8}},
                         'Bob': {'Math': {'Rank': 2, 'Grade': 3.0}, 'CS': {'Rank': 1, 'Grade': 3.9}}}
 
-        key = lambda v: v['Grade']
+        def key(v):
+            return v['Grade']
 
         value_lines = []
         Hierarchy.flatten(hierarchy1, value_dict11, value_lines)
@@ -222,6 +222,7 @@ class TestHierarchy(unittest.TestCase):
                                  {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.8},
                                  {'Name': 'Bob', 'Subject': 'Math', 'Rank': 2, 'Grade': 3.0},
                                  {'Name': 'Bob', 'Subject': 'CS', 'Rank': 1, 'Grade': 3.9}], key=key))
+
 
 if __name__ == '__main__':
     unittest.main()

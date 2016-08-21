@@ -1,6 +1,6 @@
 from __future__ import absolute_import
 
-from copy import copy
+from copy import deepcopy, copy
 from os.path import isfile
 
 from uniRW.Line import Line, OutputLine
@@ -15,7 +15,7 @@ class File:
         :param line (Line or OutputLine): a Line or OutputLine object describing a line in this file.
         """
         self.file_name = file_name
-        self.line = copy(line)  # prevent bugs in sharing the same Line object
+        self.line = deepcopy(line)  # prevent bugs in sharing the same Line object
 
 
 class DataFile(File):
@@ -31,10 +31,10 @@ class DataFile(File):
         if not isfile(file_name):
             raise ValueError(str(file_name) + " is not a file or not found")
         self.header_lineno = header_lineno
-        self.__init_line = copy(line)  # private copy of line
+        self.__init_line = deepcopy(line)  # private copy of line
 
     def reset(self):
-        self.line = copy(self.__init_line)
+        self.line = deepcopy(self.__init_line)
 
 
 class OutputFile(File):

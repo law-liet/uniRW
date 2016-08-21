@@ -1,15 +1,22 @@
-### v0.4.0:
+# Version Number Spec
+vX.Y.Z
+
+- X: Big changes. (API-breaking)
+- Y: Add more features. (API-non-breaking)
+- Z: Debug or minor fix. (API-non-breaking
+
+## v0.4.0:
 New features:
 
 - Key abstraction not needed anymore
 - Read and write data file in customized hierarchy
 
-### v0.3.0
+## v0.3.0
 New features: 
 
 - Object-oriented abstraction of key, value, line, file, reader and writer
 
-### v0.2.0
+## v0.2.0
 New features: 
 
 - Filter lines of a file
@@ -18,7 +25,7 @@ New features:
 - Sort by key or value
 - Customize to_string methods
     
-### v0.1.0
+## v0.1.0
 Features:
 
 - Select key and values to read

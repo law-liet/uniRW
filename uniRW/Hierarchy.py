@@ -203,7 +203,7 @@ class Hierarchy:
             cls.traverse(next_layer, line, current_state, value_hierarchy[val])
 
     @classmethod
-    def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({}), __top=True):
+    def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({}), top=True):
         """Merge two value hierarchies according to a hierarchy specification.
 
         :param hierarchy_spec: a valid hierarchy specification.
@@ -232,11 +232,11 @@ class Hierarchy:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}
 
         """
-        if __top:  # prevent contamination of the top level input dictionary
+        if top:  # prevent contamination of the top level input dictionary
             merged_hierarchy = deepcopy(value_hierarchy1)
         else:
             merged_hierarchy = value_hierarchy1.copy()
-        if __top and post:  # apply post map at the top level
+        if top and post:  # apply post map at the top level
             cls.apply_post_map(hierarchy_spec, state, merged_hierarchy)
 
         if type(hierarchy_spec) is list:  # Type 1

@@ -55,6 +55,8 @@ class TestState(unittest.TestCase):
             count1 += 1
             state.update(0)
             self.assertEqual(state['count1'], count1)
+            self.assertEqual(state['count2'], 0)
+            self.assertEqual(state['count3'], 0)
         state.lock()
 
         state.update_func = update2
@@ -65,7 +67,9 @@ class TestState(unittest.TestCase):
         for i in range(100):
             count2 += 2
             state.update(0)
+            self.assertEqual(state['count1'], count1)
             self.assertEqual(state['count2'], count2)
+            self.assertEqual(state['count3'], 0)
         state.lock()
 
         state.update_func = update3
@@ -75,6 +79,8 @@ class TestState(unittest.TestCase):
         state.release()
         for i in range(100):
             state.update(0)
+            self.assertEqual(state['count1'], count1)
+            self.assertEqual(state['count2'], count2)
             self.assertEqual(state['count3'], 0)
         state.lock()
 
