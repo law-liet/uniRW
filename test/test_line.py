@@ -1,5 +1,7 @@
 from __future__ import absolute_import
+
 import unittest
+
 from uniRW.Line import Line, OutputLine
 
 
@@ -145,7 +147,7 @@ class TestLine(unittest.TestCase):
         comma_line = OutputLine(',', 'a,', ',d')
         space_line = OutputLine(' ', 'd ', ' a')
 
-        self.assertEqual(comma_line.get_line(['b','c']), 'a,b,c,d')
+        self.assertEqual(comma_line.get_line(['b', 'c']), 'a,b,c,d')
         self.assertEqual(comma_line.get_line(['1', '2', '3']), 'a,1,2,3,d')
         self.assertEqual(space_line.get_line(['b', 'c']), 'd b c a')
         self.assertEqual(space_line.get_line(['1', '2', '3']), 'd 1 2 3 a')

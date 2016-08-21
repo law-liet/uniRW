@@ -16,7 +16,11 @@ class HReader:
         :param state (State): the state involved in reading.
         :param filter_f (State * Line -> bool): the predicate for filtering lines with access to state.
         """
-        Hierarchy.check(hierarchy_spec)
+        if type(hierarchy_spec) is list:
+            for h in hierarchy_spec:
+                Hierarchy.check(h)
+        else:
+            Hierarchy.check(hierarchy_spec)
         if not isinstance(state, State):
             raise ValueError("State is a State object")
 

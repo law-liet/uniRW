@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+from copy import deepcopy
+
 from uniRW.State import State
 from uniRW.Value import GeneralValue, Value, StateValue
 
@@ -131,7 +133,7 @@ class Hierarchy:
 
         :param hierarchy_spec: a valid hierarchy (or sub-hierarchy).
         :param line (Line or dict): the current line read.
-        :param current_state (State): the current state maybe used in map.
+        :param current_state (State or dict): the current state maybe used in map.
         :param value_hierarchy (dict): the dictionary to store values.
 
         Example:
@@ -201,7 +203,7 @@ class Hierarchy:
             cls.traverse(next_layer, line, current_state, value_hierarchy[val])
 
     @classmethod
-    def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({})):
+    def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({}), __top=True):
         """Merge two value hierarchies according to a hierarchy specification.
 
         :param hierarchy_spec: a valid hierarchy specification.
@@ -230,7 +232,12 @@ class Hierarchy:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}
 
         """
-        merged_hierarchy = value_hierarchy1.copy()
+        if __top:  # prevent contamination of the top level input dictionary
+            merged_hierarchy = deepcopy(value_hierarchy1)
+        else:
+            merged_hierarchy = value_hierarchy1.copy()
+        if __top and post:  # apply post map at the top level
+            cls.apply_post_map(hierarchy_spec, state, merged_hierarchy)
 
         if type(hierarchy_spec) is list:  # Type 1
 
@@ -238,10 +245,10 @@ class Hierarchy:
 
                 if isinstance(value, GeneralValue):
                     # apply reduce (or post_map, post_reduce) to "leaf" values
-                    val1 = value_hierarchy1[value.name]
+                    val1 = merged_hierarchy[value.name]
                     val2 = value_hierarchy2[value.name]
                     if post:
-                        new_val1 = value.post_map_f(state, val1)
+                        new_val1 = val1  # already apply post map
                         new_val2 = value.post_map_f(state, val2)
                         new_val = value.post_reduce_f(new_val1, new_val2)
                     else:
@@ -251,14 +258,15 @@ class Hierarchy:
                 else:  # Type 3: at "node", merge next layer
                     val, next_layer = value
                     merged_hierarchy[val] = \
-                        cls.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
+                        cls.merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
 
         elif type(hierarchy_spec) is dict:  # Type 2: at "node", merge every sub-hierarchy
-            value, next_layer = list(hierarchy_spec.items())[0]
+            _, next_layer = list(hierarchy_spec.items())[0]
             for val, next_val_layer2 in value_hierarchy2.items():
-                if val in value_hierarchy1:
-                    next_val_layer1 = value_hierarchy1[val]
-                    merged_hierarchy[val] = cls.merge(next_layer, next_val_layer1, next_val_layer2, post, state)
+                if val in merged_hierarchy:
+                    next_val_layer1 = merged_hierarchy[val]
+                    merged_hierarchy[val] = \
+                        cls.merge(next_layer, next_val_layer1, next_val_layer2, post, state, False)
                 else:
                     if post:
                         cls.apply_post_map(next_layer, state, next_val_layer2)
@@ -266,7 +274,8 @@ class Hierarchy:
 
         else:  # Type 3: at "node", merge next layer
             val, next_layer = hierarchy_spec
-            merged_hierarchy[val] = cls.merge(next_layer, value_hierarchy1[val], value_hierarchy2[val], post, state)
+            merged_hierarchy[val] = \
+                cls.merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
 
         return merged_hierarchy
 

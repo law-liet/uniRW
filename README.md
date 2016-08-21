@@ -1,4 +1,5 @@
-# uniRW [![pypi](https://badge.fury.io/py/uniRW.svg)](https://badge.fury.io/py/uniRW) 
+# uniRW [![pypi](https://badge.fury.io/py/uniRW.svg)](https://badge.fury.io/py/uniRW) [![Build Status](https://travis-ci.org/law-liet/uniRW.svg?branch=master)](https://travis-ci.org/law-liet/uniRW) [![codecov](https://codecov.io/gh/law-liet/uniRW/branch/master/graph/badge.svg)](https://codecov.io/gh/law-liet/uniRW)
+
 **uniRW** is a universal reader & writer package for complex, stateful data file processing.
 
 * **Declarative:** Declare value structures and hierarchies, declare the state to be kept track of, declare the file structure, and **uniRW** will take care the details and process data in a predictable way. Declarative processing enables easy debugging and focuses on logic. 

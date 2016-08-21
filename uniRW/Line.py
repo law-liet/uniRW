@@ -19,6 +19,9 @@ class Line:
         else:
             return self.get_by_name(item)
 
+    def __contains__(self, name):
+        return name in self.name_col_dict
+
     def get_by_name(self, name):
         if name in self.name_col_dict:
             return self.__line[self.name_col_dict[name]]

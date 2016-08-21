@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 import unittest
+from uniRW.File import OutputFile
 from uniRW import HWriter
 
 
