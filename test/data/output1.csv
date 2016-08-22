@@ -1,0 +1,7 @@
+Name,Course,Rank,Grade
+Bobby,Math,2,90.0
+Alice,CS,2,95.0
+Bobby,CS,1,98.0
+Alice,Math,1,100.0
+# Test output
+# uniRW HWriter

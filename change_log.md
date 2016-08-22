@@ -3,7 +3,17 @@ vX.Y.Z
 
 - X: Big changes. (API-breaking)
 - Y: Add more features. (API-non-breaking)
-- Z: Debug or minor fix. (API-non-breaking
+- Z: Debug or minor fix. (API-non-breaking)
+
+Do not record debug and minor fixes currently.
+
+## v0.5.0:
+A clean version passing all tests.
+
+New features:
+
+- Generalize hierarchy from reader and writer
+- Dictionary-like access for state and line
 
 ## v0.4.0:
 New features:

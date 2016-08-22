@@ -3,7 +3,7 @@
 from __future__ import absolute_import
 from __future__ import print_function
 from re import split as resplit
-from uniRW.util import check_and_apply_f, check_and_apply_2
+from uniRW.deprecated.util import check_and_apply_f, check_and_apply_2
 import sys
 
 def read(file_name, mode, key_col, val_cols, split_re, has_header=False,

@@ -211,6 +211,7 @@ class Hierarchy:
         :param value_hierarchy2 (dict): a dictionary with respect to hierarchy_spec.
         :param post (bool): apply map, reduce or apply post_map, post_reduce
         :param state (State): the current state maybe used in map or post_map
+        :param top (bool): whether to copy the input (value_hierarchy1)
         :return (dict): the merged value hierarchy
 
         Example 1:

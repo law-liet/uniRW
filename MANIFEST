@@ -20,3 +20,4 @@ uniRW/deprecated/RW.py
 uniRW/deprecated/Reader.py
 uniRW/deprecated/Writer.py
 uniRW/deprecated/__init__.py
+uniRW/deprecated/util.py
