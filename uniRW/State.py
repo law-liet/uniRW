@@ -1,11 +1,11 @@
 from __future__ import absolute_import, print_function
 
-from uniRW.util import idenL
+from uniRW.util import null
 
 
 class State:
 
-    def __init__(self, init_state, update_func=idenL):
+    def __init__(self, init_state, update_func=null):
         """Initialize a state for stateful file reading.
 
         :param init_state (dict): a dictionary (name => value) storing the initial state.

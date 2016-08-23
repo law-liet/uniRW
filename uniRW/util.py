@@ -1,8 +1,8 @@
 # utility functions
 
 
-def idenL(x, _):
-    return x
+def null(x,y):
+    return
 
 
 def idenR(_, x):
