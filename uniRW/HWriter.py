@@ -29,10 +29,9 @@ class HWriter:
         :param sort_by (str): the name of a value to sort by.
         :param reverse: sort in reverse order or not.
         """
-        value_lines = []
 
         # flatten the value hierarchy (dictionary)
-        Hierarchy.flatten(self.hierarchy_spec, value_hierarchy, value_lines)
+        value_lines = Hierarchy.flatten(self.hierarchy_spec, value_hierarchy)
         self.write_flat(out_file, value_lines, mode, sort_by, reverse)
 
     def write_flat(self, out_file, value_lines, mode, sort_by, reverse):

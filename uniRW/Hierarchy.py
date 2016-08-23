@@ -281,13 +281,11 @@ class Hierarchy:
         return merged_hierarchy
 
     @classmethod
-    def flatten(cls, hierarchy_spec, value_hierarchy, value_lines, value_line={}):
+    def flatten(cls, hierarchy_spec, value_hierarchy):
         """Convert a value hierarchy to all "branches" with respect to a hierarchy specification.
 
         :param hierarchy_spec: a valid hierarchy specification.
         :param value_hierarchy (dict): a dictionary with respect to hierarchy_spec.
-        :param value_lines ([dict]): a list of dictionaries storing the flatten result.
-        :param value_line (dict): a temporary (value name => value) dictionary storing the current flatten "branch".
 
         Example:
             Convert (value_hierarchy):
@@ -299,25 +297,31 @@ class Hierarchy:
                     {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.9}
                 ]
         """
-        if type(hierarchy_spec) is list:  # Type 1
-            current_value_line = value_line
-            for value in hierarchy_spec:
-                if isinstance(value, GeneralValue):
-                    # at "leaf", store (value name => value) in current value line
-                    current_value_line[value.name] = value_hierarchy[value.name]
-                else:  # Type 3: at "node", go to next layer
-                    val, next_layer = value
-                    cls.flatten(next_layer, value_hierarchy[val], value_lines, current_value_line)
-            value_lines.append(current_value_line)  # finish a "branch"
+        value_lines = []
 
-        elif type(hierarchy_spec) is dict:  # Type 2: at "node"
-            for root, next in value_hierarchy.items():
-                current_value_line = value_line.copy()  # copy the current value line to different sub-hierarchies
-                value, next_layer = list(hierarchy_spec.items())[0]
-                current_value_line[value.name] = root  # store the current "node"
-                cls.flatten(next_layer, next, value_lines, current_value_line)  # flatten next layer
+        def flatten_helper(hierarchy_spec, value_hierarchy, value_lines, value_line={}):
+            if type(hierarchy_spec) is list:  # Type 1
+                current_value_line = value_line
+                for value in hierarchy_spec:
+                    if isinstance(value, GeneralValue):
+                        # at "leaf", store (value name => value) in current value line
+                        current_value_line[value.name] = value_hierarchy[value.name]
+                    else:  # Type 3: at "node", go to next layer
+                        val, next_layer = value
+                        flatten_helper(next_layer, value_hierarchy[val], value_lines, current_value_line)
+                value_lines.append(current_value_line)  # finish a "branch"
 
-        else:  # Type 3: at "node", go to next layer
-            current_value_line = value_line
-            val, next_layer = hierarchy_spec
-            cls.flatten(next_layer, value_hierarchy[val], value_lines, current_value_line)
+            elif type(hierarchy_spec) is dict:  # Type 2: at "node"
+                for root, next in value_hierarchy.items():
+                    current_value_line = value_line.copy()  # copy the current value line to different sub-hierarchies
+                    value, next_layer = list(hierarchy_spec.items())[0]
+                    current_value_line[value.name] = root  # store the current "node"
+                    flatten_helper(next_layer, next, value_lines, current_value_line)  # flatten next layer
+
+            else:  # Type 3: at "node", go to next layer
+                current_value_line = value_line
+                val, next_layer = hierarchy_spec
+                flatten_helper(next_layer, value_hierarchy[val], value_lines, current_value_line)
+
+        flatten_helper(hierarchy_spec, value_hierarchy, value_lines)
+        return value_lines

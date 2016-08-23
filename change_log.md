@@ -3,9 +3,9 @@ vX.Y.Z
 
 - X: Big changes. (API-breaking)
 - Y: Add more features. (API-non-breaking)
-- Z: Debug or minor fix. (API-non-breaking)
+- Z: Debug or minor changes. (API-non-breaking)
 
-Do not record debug and minor fixes currently.
+Do not record debug and minor changes currently.
 
 ## v0.5.0:
 A clean version passing all tests.

@@ -200,24 +200,20 @@ class TestHierarchy(unittest.TestCase):
         def key(v):
             return v['Grade']
 
-        value_lines = []
-        Hierarchy.flatten(hierarchy1, value_dict11, value_lines)
-        self.assertEqual(value_lines, [{'Name': 'Alice', 'Grade': 4.0}])
+        value_lines11 = Hierarchy.flatten(hierarchy1, value_dict11)
+        self.assertEqual(value_lines11, [{'Name': 'Alice', 'Grade': 4.0}])
 
-        value_lines = []
-        Hierarchy.flatten(hierarchy1, value_dict12, value_lines)
-        self.assertEqual(sorted(value_lines, key=key),
+        value_lines12 = Hierarchy.flatten(hierarchy1, value_dict12)
+        self.assertEqual(sorted(value_lines12, key=key),
                          sorted([{'Name': 'Alice', 'Grade': 4.0}, {'Name': 'Bob', 'Grade': 3.0}], key=key))
 
-        value_lines = []
-        Hierarchy.flatten(hierarchy2, value_dict21, value_lines)
-        self.assertEqual(sorted(value_lines, key=key),
+        value_lines21 = Hierarchy.flatten(hierarchy2, value_dict21)
+        self.assertEqual(sorted(value_lines21, key=key),
                          sorted([{'Name': 'Alice', 'Subject': 'Math', 'Rank': 1, 'Grade': 4.0},
                                  {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.9}], key=key))
 
-        value_lines = []
-        Hierarchy.flatten(hierarchy2, value_dict22, value_lines)
-        self.assertEqual(sorted(value_lines, key=key),
+        value_lines22 = Hierarchy.flatten(hierarchy2, value_dict22)
+        self.assertEqual(sorted(value_lines22, key=key),
                          sorted([{'Name': 'Alice', 'Subject': 'Math', 'Rank': 1, 'Grade': 4.0},
                                  {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.8},
                                  {'Name': 'Bob', 'Subject': 'Math', 'Rank': 2, 'Grade': 3.0},
