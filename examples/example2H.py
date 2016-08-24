@@ -20,7 +20,7 @@ import uniRW as RW
 #
 
 #
-# Suppose we a varied number of exams and grades of a varied number of students for varied number of courses,
+# Suppose we have a varied number of exams and grades of a varied number of students for a varied number of courses,
 # which are recorded in a varied number of files named example2*.csv
 # We want to compute the average grade of each course for each student.
 #
