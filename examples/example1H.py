@@ -152,4 +152,6 @@ def percentile_grade(file_name):
 
 
 if __name__ == '__main__':
+    print('Input file: data/example1.csv')
     percentile_grade('data/'+'example1.csv')
+    print('Done. Take a look at data/example1_sorted.csv & data/example1_percentile.csv')

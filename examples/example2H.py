@@ -70,4 +70,6 @@ def write_grade(file_name, grade_dict):
 
 if __name__ == "__main__":
     raw_grade_files = glob("data/example2*.csv")
+    print("Input files: " + ' & '.join(raw_grade_files))
     write_grade("data/average_example2.csv", read_grade(raw_grade_files))
+    print('Done. Take a look at data/average_example.csv')
