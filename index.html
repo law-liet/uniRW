@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>uniRW by law-liet</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>uniRW</h1>
+        <h2>A universal reader &amp; writer package for stateful data file processing.</h2>
+        <a href="https://github.com/law-liet/uniRW" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="unirw---" class="anchor" href="#unirw---" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>uniRW <a href="https://badge.fury.io/py/uniRW"><img src="https://badge.fury.io/py/uniRW.svg" alt="pypi"></a> <a href="https://travis-ci.org/law-liet/uniRW"><img src="https://travis-ci.org/law-liet/uniRW.svg?branch=master" alt="Build Status"></a> <a href="https://codecov.io/gh/law-liet/uniRW"><img src="https://codecov.io/gh/law-liet/uniRW/branch/master/graph/badge.svg" alt="codecov"></a>
+</h1>
+
+<p><strong>uniRW</strong> is a universal reader &amp; writer package for complex, stateful data file processing.</p>
+
+<ul>
+<li>
+<strong>Declarative:</strong> Declare value structures and hierarchies, declare the state to be kept track of, declare the file structure, and <strong>uniRW</strong> will take care the details and process data in a predictable way. Declarative processing enables easy debugging and focuses on logic. </li>
+<li>
+<strong>Reusable:</strong> Reuse a reader/writer in reading/writing multiple files. Reuse common value structures in different readers/writers. Compose simple hierarchies into more complex hierarchies. Focus on common patterns in input files and standardize output files.</li>
+<li>
+<strong>Universal:</strong> Process any files with lines split by any regular expressions. Apply user-defined map, filter and reduce, keep track of evolving state during processing. Store and output data in a user-defined hierarchy of values.<br>
+</li>
+</ul>
+
+<h1>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>Easy to install with <a href="https://pip.pypa.io/en/stable/">pip</a>.</p>
+
+<pre><code>pip install uniRW
+</code></pre>
+
+<h1>
+<a id="quick-start" class="anchor" href="#quick-start" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Quick Start</h1>
+
+<p>See <a href="https://github.com/law-liet/uniRW/tree/master/examples">examples</a> for more examples.</p>
+
+<p>Import the package:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> <span class="pl-k">import</span> uniRW <span class="pl-k">as</span> <span class="pl-c1">RW</span></pre></div>
+
+<h2>
+<a id="read" class="anchor" href="#read" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Read</h2>
+
+<p>Suppose we want to read a file named <em>example.csv</em> that looks like this:</p>
+
+<pre><code>Name,Major,Grade
+Alice,Math,4.0
+Bob,CS,3.0
+</code></pre>
+
+<p>Define the value structures and hierarchy:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> name, major <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>), <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>)
+<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>, <span class="pl-v">map_f</span><span class="pl-k">=</span><span class="pl-k">lambda</span> <span class="pl-smi">_</span>, <span class="pl-smi">x</span>: <span class="pl-c1">float</span>(x))
+<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> hierarchy <span class="pl-k">=</span> {name: [major, grade]}</pre></div>
+
+<p>Define the input file:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade_file <span class="pl-k">=</span> <span class="pl-c1">RW</span>.DataFile(<span class="pl-s"><span class="pl-pds">'</span>example1.csv<span class="pl-pds">'</span></span>, <span class="pl-c1">RW</span>.Line(<span class="pl-s"><span class="pl-pds">'</span>,<span class="pl-pds">'</span></span>), <span class="pl-v">header_lineno</span><span class="pl-k">=</span><span class="pl-c1">0</span>)</pre></div>
+
+<p>Create the reader and read the file:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade_dict, _ <span class="pl-k">=</span> <span class="pl-c1">RW</span>.HReader(hierarchy).read(grade_file)
+<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> <span class="pl-c1">print</span>(grade_dict)
+{<span class="pl-s"><span class="pl-pds">'</span>Alice<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Math<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">4.0</span>}, <span class="pl-s"><span class="pl-pds">'</span>Bob<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>CS<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">3.0</span>}}</pre></div>
+
+<h2>
+<a id="write" class="anchor" href="#write" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Write</h2>
+
+<p>Suppose we want to write the above <code>grade_dict</code> to a new file <em>new_example.csv</em> that looks like this:</p>
+
+<pre><code>Name,Major,Grade
+Bob,CS,3.0
+Alice,Math,4.0
+</code></pre>
+
+<p>Define the value line (with <code>name</code>, <code>major</code>, and <code>grade</code> the same as above):</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> value_line <span class="pl-k">=</span> [name, major, grade]</pre></div>
+
+<p>Define the output file:</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> output_file <span class="pl-k">=</span> <span class="pl-c1">RW</span>.OutputFile(<span class="pl-s"><span class="pl-pds">'</span>new_example.csv<span class="pl-pds">'</span></span>, <span class="pl-c1">RW</span>.OutputLine(<span class="pl-s"><span class="pl-pds">'</span>,<span class="pl-pds">'</span></span>))</pre></div>
+
+<p>Create the writer and write the file (with <code>hierarchy</code> the same as above):</p>
+
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> <span class="pl-c1">RW</span>.HWriter(hierarchy, value_line).write(output_file, grade_dict, <span class="pl-v">sort_by</span><span class="pl-k">=</span><span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>)</pre></div>
+
+<h1>
+<a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Documentation</h1>
+
+<p>See <a href="https://github.com/law-liet/uniRW/wiki">wiki</a> for documentation.</p>
+
+<h1>
+<a id="future-work" class="anchor" href="#future-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Future Work</h1>
+
+<ul>
+<li>Better abstraction/structure</li>
+<li>Hierarchy Generalization</li>
+<li>Optimization</li>
+<li>Add type checker (Python 3.5 typing module + Mypy ?)</li>
+</ul>
+
+<h1>
+<a id="change-log" class="anchor" href="#change-log" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Change Log</h1>
+
+<p>See <a href="https://github.com/law-liet/uniRW/blob/master/change_log.md">Change Log</a>.</p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
+
+<p>Read <a href="https://github.com/law-liet/uniRW/blob/master/LICENSE">License</a> file.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/law-liet/uniRW/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/law-liet/uniRW/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/law-liet/uniRW"></a> is maintained by <a href="https://github.com/law-liet">law-liet</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
