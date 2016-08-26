@@ -66,16 +66,16 @@
 
 <p>Suppose we want to read a file named <em>example.csv</em> that looks like this:</p>
 
-<pre><code>Name,Major,Grade
+<pre><code>Name,Subject,Grade
 Alice,Math,4.0
-Bob,CS,3.0
+Alice,CS,3.0
 </code></pre>
 
 <p>Define the value structures and hierarchy:</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> name, major <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>), <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>)
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> name, subject <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>), <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Subject<span class="pl-pds">'</span></span>)
 <span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>, <span class="pl-v">map_f</span><span class="pl-k">=</span><span class="pl-k">lambda</span> <span class="pl-smi">_</span>, <span class="pl-smi">x</span>: <span class="pl-c1">float</span>(x))
-<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> hierarchy <span class="pl-k">=</span> {name: [major, grade]}</pre></div>
+<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> hierarchy <span class="pl-k">=</span> {name: {subject: [grade]}}</pre></div>
 
 <p>Define the input file:</p>
 
@@ -85,21 +85,21 @@ Bob,CS,3.0
 
 <div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade_dict, _ <span class="pl-k">=</span> <span class="pl-c1">RW</span>.HReader(hierarchy).read(grade_file)
 <span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> <span class="pl-c1">print</span>(grade_dict)
-{<span class="pl-s"><span class="pl-pds">'</span>Alice<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>Math<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">4.0</span>}, <span class="pl-s"><span class="pl-pds">'</span>Bob<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Major<span class="pl-pds">'</span></span>: <span class="pl-s"><span class="pl-pds">'</span>CS<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">3.0</span>}}</pre></div>
+{<span class="pl-s"><span class="pl-pds">'</span>Alice<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Math<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">4.0</span>}, <span class="pl-s"><span class="pl-pds">'</span>CS<span class="pl-pds">'</span></span>: {<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>: <span class="pl-c1">3.0</span>}}}</pre></div>
 
 <h2>
 <a id="write" class="anchor" href="#write" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Write</h2>
 
 <p>Suppose we want to write the above <code>grade_dict</code> to a new file <em>new_example.csv</em> that looks like this:</p>
 
-<pre><code>Name,Major,Grade
-Bob,CS,3.0
+<pre><code>Name,Subject,Grade
+Alice,CS,3.0
 Alice,Math,4.0
 </code></pre>
 
-<p>Define the value line (with <code>name</code>, <code>major</code>, and <code>grade</code> the same as above):</p>
+<p>Define the value line (with <code>name</code>, <code>subject</code>, and <code>grade</code> the same as above):</p>
 
-<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> value_line <span class="pl-k">=</span> [name, major, grade]</pre></div>
+<div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> value_line <span class="pl-k">=</span> [name, subject, grade]</pre></div>
 
 <p>Define the output file:</p>
 
