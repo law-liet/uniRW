@@ -90,7 +90,7 @@ class Hierarchy:
             raise
 
     @classmethod
-    def apply_post_map(cls, hierarchy_spec, state, value_hierarchy):
+    def apply_post_map(cls, hierarchy_spec, value_hierarchy, state=State({})):
         """Apply post_map to every value at the "leaf" of hierarchy.
 
         :param hierarchy_spec: a valid hierarchy (or sub-hierarchy).
@@ -116,19 +116,19 @@ class Hierarchy:
                 else:
                     # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
                     val, next_layer = value
-                    cls.apply_post_map(next_layer, state, value_hierarchy[val])
+                    cls.apply_post_map(next_layer, value_hierarchy[val], state)
 
         elif type(hierarchy_spec) is dict:  # Type 2: at the "node" of hierarchy, go to next hierarchy_spec
             value, next_layer = list(hierarchy_spec.items())[0]
             for val, _ in value_hierarchy.items():
-                cls.apply_post_map(next_layer, state, value_hierarchy[val])
+                cls.apply_post_map(next_layer, value_hierarchy[val], state)
 
         else:  # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
             val, next_layer = hierarchy_spec
-            cls.apply_post_map(next_layer, state, value_hierarchy[val])
+            cls.apply_post_map(next_layer, value_hierarchy[val], state)
 
     @classmethod
-    def traverse(cls, hierarchy_spec, line, current_state, value_hierarchy):
+    def traverse(cls, hierarchy_spec, line, state, value_hierarchy):
         """Store the values in the line in the input dictionary by traversing the hierarchy.
 
         :param hierarchy_spec: a valid hierarchy (or sub-hierarchy).
@@ -150,16 +150,16 @@ class Hierarchy:
                 if isinstance(value, StateValue):
                     # get value from state and apply map
                     val_name = value.name
-                    val = value.map_f(current_state, current_state[val_name])
+                    val = value.map_f(state, state[val_name])
                 elif isinstance(value, Value):
                     # get value from line and apply map
                     val_name = value.name
-                    val = value.map_f(current_state, line[val_name])
+                    val = value.map_f(state, line[val_name])
                 else:
                     # Type 3: store value and go to next layer
                     val, next_layer = value
                     value_hierarchy[val] = {}
-                    cls.traverse(next_layer, line, current_state, value_hierarchy[val])
+                    cls.traverse(next_layer, line, state, value_hierarchy[val])
 
                 # if another value is already stored, apply reduce and store the value in dictionary
                 if val_name in value_hierarchy:
@@ -176,18 +176,18 @@ class Hierarchy:
             if isinstance(value, StateValue):
                 # get value from state and apply map
                 val_name = value.name
-                val = value.map_f(current_state, current_state[val_name])
+                val = value.map_f(state, state[val_name])
             elif isinstance(value, Value):
                 # get value from line and apply map
                 val_name = value.name
-                val = value.map_f(current_state, line[val_name])
+                val = value.map_f(state, line[val_name])
             else:
                 raise ValueError("Invalid hierarchy specification.")
 
             if val in value_hierarchy:
                 # if value already stored, go to next layer and merge with current hierarchy
                 new_hierarchy = {}
-                cls.traverse(next_layer, line, current_state, new_hierarchy)
+                cls.traverse(next_layer, line, state, new_hierarchy)
                 current_hierarchy = value_hierarchy[val]
                 merged_hierarchy = cls.merge(next_layer, current_hierarchy, new_hierarchy)
                 value_hierarchy[val] = merged_hierarchy
@@ -195,12 +195,12 @@ class Hierarchy:
             else:
                 # store value and go to next layer
                 value_hierarchy[val] = {}
-                cls.traverse(next_layer, line, current_state, value_hierarchy[val])
+                cls.traverse(next_layer, line, state, value_hierarchy[val])
 
         else:  # Type 3: store value and go to next layer
             val, next_layer = hierarchy_spec
             value_hierarchy[val] = {}
-            cls.traverse(next_layer, line, current_state, value_hierarchy[val])
+            cls.traverse(next_layer, line, state, value_hierarchy[val])
 
     @classmethod
     def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({}), top=True):
@@ -238,7 +238,7 @@ class Hierarchy:
         else:
             merged_hierarchy = value_hierarchy1.copy()
         if top and post:  # apply post map at the top level
-            cls.apply_post_map(hierarchy_spec, state, merged_hierarchy)
+            cls.apply_post_map(hierarchy_spec, merged_hierarchy, state)
 
         if type(hierarchy_spec) is list:  # Type 1
 
@@ -270,7 +270,7 @@ class Hierarchy:
                         cls.merge(next_layer, next_val_layer1, next_val_layer2, post, state, False)
                 else:
                     if post:
-                        cls.apply_post_map(next_layer, state, next_val_layer2)
+                        cls.apply_post_map(next_layer, next_val_layer2, state)
                     merged_hierarchy[val] = next_val_layer2
 
         else:  # Type 3: at "node", merge next layer
@@ -325,3 +325,31 @@ class Hierarchy:
 
         flatten_helper(hierarchy_spec, value_hierarchy, value_lines)
         return value_lines
+
+    @classmethod
+    def traverse_lines(cls, hierarchy_spec, value_lines, state=State({}), filter_f=lambda _, x: True):
+        """Covert a list of lines to a dictionary with respect to hierarchy spec (backward of flatten).
+
+        :param hierarchy_spec: a valid hierarchy specification
+        :param value_lines ([dict]): a list of (name => value) dictionary
+        :param state (State or dict): the evolving state used in map/post_map/filter
+        :param filter_f (State * Line -> bool): the predicate for filtering lines with access to state.
+        :return: the result dictionary
+        """
+        value_hierarchy = {}
+
+        for line in value_lines:
+
+            # update state
+            state.release()
+            state.update(line)
+            state.lock()
+
+            # filter out a line if predicate returns false
+            if not filter_f(state, line):
+                continue
+
+            # traverse a line with respect to hierarchy
+            cls.traverse(hierarchy_spec, line, state, value_hierarchy)
+
+        return value_hierarchy

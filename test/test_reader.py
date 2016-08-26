@@ -45,6 +45,31 @@ class TestReader(unittest.TestCase):
         self.hierarchy21 = {name: {course: [grade1]}}
         self.hierarchy22 = {name: {course: [grade2]}}
 
+    def test_read_lines(self):
+        value_dict11 = {'Alice': {'Grade': 4.0}}
+        value_dict12 = {'Alice': {'Grade': 4.0}, 'Bob': {'Grade': 3.0}}
+        value_dict21 = {'Alice': {'Math': {'Grade': 4.0}, 'CS': {'Grade': 3.9}}}
+        value_dict22 = {'Alice': {'Math': {'Grade': 4.0}, 'CS': {'Grade': 3.8}},
+                        'Bob': {'Math': {'Grade': 3.0}, 'CS': {'Grade': 3.9}}}
+        value_lines11 = [{'Name': 'Alice', 'Grade': 4.0}]
+        value_lines12 = [{'Name': 'Alice', 'Grade': 4.0}, {'Name': 'Bob', 'Grade': 3.0}]
+        value_lines21 = [{'Name': 'Alice', 'Course': 'Math', 'Rank': 1, 'Grade': 4.0},
+                         {'Name': 'Alice', 'Course': 'CS', 'Rank': 2, 'Grade': 3.9}]
+        value_lines22 = [{'Name': 'Alice', 'Course': 'Math', 'Rank': 1, 'Grade': 4.0},
+                         {'Name': 'Alice', 'Course': 'CS', 'Rank': 2, 'Grade': 3.8},
+                         {'Name': 'Bob', 'Course': 'Math', 'Rank': 2, 'Grade': 3.0},
+                         {'Name': 'Bob', 'Course': 'CS', 'Rank': 1, 'Grade': 3.9}]
+
+        grade_dict11, _ = HReader(self.hierarchy11).read_lines(value_lines11)
+        grade_dict12, _ = HReader(self.hierarchy11).read_lines(value_lines12)
+        grade_dict21, _ = HReader(self.hierarchy21).read_lines(value_lines21)
+        grade_dict22, _ = HReader(self.hierarchy21).read_lines(value_lines22)
+
+        self.assertEqual(grade_dict11, value_dict11)
+        self.assertEqual(grade_dict12, value_dict12)
+        self.assertEqual(grade_dict21, value_dict21)
+        self.assertEqual(grade_dict22, value_dict22)
+
     def test_read(self):
         def skip_first_line(line):
             return not line[0][0] == '#'

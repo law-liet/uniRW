@@ -3,12 +3,12 @@ from distutils.core import setup
 setup(
   name='uniRW',
   packages=['uniRW', 'uniRW/deprecated'],
-  version='0.5.1',
+  version='0.5.2',
   description='A universal reader and writer for stateful data file processing',
   author='Langxuan Su',
   author_email='lawliet@orion.codes',
   url='https://github.com/law-liet/uniRW',
-  download_url='https://github.com/law-liet/uniRW/tarball/v0.5.1',
+  download_url='https://github.com/law-liet/uniRW/tarball/v0.5.2',
   keywords=['declarative', 'functional', 'reusable', 'universal', 'stateful', 'data',
               'file', 'processing', 'csv', 'reader', 'writer',  'map', 'reduce', 'filter'],
   classifiers=[

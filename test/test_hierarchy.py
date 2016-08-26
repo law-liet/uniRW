@@ -68,8 +68,8 @@ class TestHierarchy(unittest.TestCase):
         value_dict2 = {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}},
                        'Bob': {'CS': {'Rank': 2, 'Grade': 3.0}}}
 
-        Hierarchy.apply_post_map(hierarchy1, {}, value_dict1)
-        Hierarchy.apply_post_map(hierarchy2, {}, value_dict2)
+        Hierarchy.apply_post_map(hierarchy1, value_dict1, {})
+        Hierarchy.apply_post_map(hierarchy2, value_dict2, {})
 
         self.assertEqual(value_dict1, {'Alice': {'Grade': 3.0}, 'Bob': {'Grade': 2.0}})
         self.assertEqual(value_dict2, {'Alice': {'Math': {'Rank': 2, 'Grade': 3.0}},
@@ -219,6 +219,34 @@ class TestHierarchy(unittest.TestCase):
                                  {'Name': 'Bob', 'Subject': 'Math', 'Rank': 2, 'Grade': 3.0},
                                  {'Name': 'Bob', 'Subject': 'CS', 'Rank': 1, 'Grade': 3.9}], key=key))
 
+    def test_traverse_lines(self):
+        name = self.name
+        subject = self.subject
+        grade = self.grade
+        rank = self.rank
+
+        hierarchy1 = {name: [grade]}
+        hierarchy2 = {name: {subject: [rank, grade]}}
+
+        value_dict11 = {'Alice': {'Grade': 4.0}}
+        value_dict12 = {'Alice': {'Grade': 4.0}, 'Bob': {'Grade': 3.0}}
+        value_dict21 = {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}, 'CS': {'Rank': 2, 'Grade': 3.9}}}
+        value_dict22 = {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}, 'CS': {'Rank': 2, 'Grade': 3.8}},
+                        'Bob': {'Math': {'Rank': 2, 'Grade': 3.0}, 'CS': {'Rank': 1, 'Grade': 3.9}}}
+
+        value_lines11 = [{'Name': 'Alice', 'Grade': 4.0}]
+        value_lines12 = [{'Name': 'Alice', 'Grade': 4.0}, {'Name': 'Bob', 'Grade': 3.0}]
+        value_lines21 = [{'Name': 'Alice', 'Subject': 'Math', 'Rank': 1, 'Grade': 4.0},
+                         {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.9}]
+        value_lines22 = [{'Name': 'Alice', 'Subject': 'Math', 'Rank': 1, 'Grade': 4.0},
+                         {'Name': 'Alice', 'Subject': 'CS', 'Rank': 2, 'Grade': 3.8},
+                         {'Name': 'Bob', 'Subject': 'Math', 'Rank': 2, 'Grade': 3.0},
+                         {'Name': 'Bob', 'Subject': 'CS', 'Rank': 1, 'Grade': 3.9}]
+
+        self.assertEqual(value_dict11, Hierarchy.traverse_lines(hierarchy1, value_lines11))
+        self.assertEqual(value_dict12, Hierarchy.traverse_lines(hierarchy1, value_lines12))
+        self.assertEqual(value_dict21, Hierarchy.traverse_lines(hierarchy2, value_lines21))
+        self.assertEqual(value_dict22, Hierarchy.traverse_lines(hierarchy2, value_lines22))
 
 if __name__ == '__main__':
     unittest.main()

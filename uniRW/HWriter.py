@@ -32,9 +32,9 @@ class HWriter:
 
         # flatten the value hierarchy (dictionary)
         value_lines = Hierarchy.flatten(self.hierarchy_spec, value_hierarchy)
-        self.write_flat(out_file, value_lines, mode, sort_by, reverse)
+        self.write_lines(out_file, value_lines, mode, sort_by, reverse)
 
-    def write_flat(self, out_file, value_lines, mode, sort_by, reverse):
+    def write_lines(self, out_file, value_lines, mode, sort_by, reverse):
         """Write a file according to value specification, with a flatten value hierarchy.
         """
         output = open(out_file.file_name, mode)

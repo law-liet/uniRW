@@ -25,16 +25,38 @@ class HReader:
         self.filter_f = filter_f
         self.__init_state = deepcopy(self.state)
 
+    def read_lines(self, value_lines, apply_post_map=False, carry_state=False):
+        """Store the data in a list of lines with respect to the hierarchy specification of values
+
+        :param value_lines ([dict]): a list of (name => value) dictionary
+        :param apply_post_map (bool): whether apply post_map or not
+        :param carry_state: whether mutate the input state
+        :return (dict): the result dictionary and the final state.
+        """
+        # if not carry state, copy the state object such that the input state is not mutated.
+        if not carry_state:
+            current_state = deepcopy(self.state)
+        else:
+            current_state = self.state
+
+        value_hierarchy = Hierarchy.traverse_lines(self.hierarchy_spec, value_lines, current_state, self.filter_f)
+
+        # apply post_map_f in each value if apply_post_map is true
+        if apply_post_map:
+            Hierarchy.apply_post_map(self.hierarchy_spec, value_hierarchy, current_state)
+
+        return value_hierarchy, current_state
+
+
     def read(self, data_file, mode='r', apply_post_map=False, carry_state=False):
-        """Read a file the store the data with respect to the hierarchy specification of values.
+        """Read a file to store the data with respect to the hierarchy specification of values.
 
         :param data_file (DataFile): the file to read.
         :param mode (str): reading mode ('r', 'r+', ...).
         :param apply_post_map (bool): whether apply post_map for each value or not.
         :param carry_state (bool): whether keep the mutated state or not.
-        :return (dict, State): the result dictionary (list if multiple hierarchies) and the final state.
+        :return (dict, State): the result dictionary and the final state.
         """
-
         if not isinstance(data_file, DataFile):
             raise ValueError("Data file is not a DataFile object.")
 
@@ -81,7 +103,7 @@ class HReader:
 
         # apply post_map_f in each value if apply_post_map is true
         if apply_post_map:
-            Hierarchy.apply_post_map(self.hierarchy_spec, current_state, value_hierarchy)
+            Hierarchy.apply_post_map(self.hierarchy_spec, value_hierarchy, current_state)
 
         return value_hierarchy, current_state
 
