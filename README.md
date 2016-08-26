@@ -25,16 +25,16 @@ Import the package:
 
 Suppose we want to read a file named *example.csv* that looks like this:
 
-    Name,Major,Grade
+    Name,Subject,Grade
     Alice,Math,4.0
-    Bob,CS,3.0
+    Alice,CS,3.0
 
 Define the value structures and hierarchy:
 
 ``` python
->>> name, major = RW.Value('Name'), RW.Value('Major')
+>>> name, subject = RW.Value('Name'), RW.Value('Subject')
 >>> grade = RW.Value('Grade', map_f=lambda _, x: float(x))
->>> hierarchy = {name: [major, grade]}
+>>> hierarchy = {name: {subject: [grade]}}
 ```
 
 Define the input file:
@@ -48,21 +48,21 @@ Create the reader and read the file:
 ```python
 >>> grade_dict, _ = RW.HReader(hierarchy).read(grade_file)
 >>> print(grade_dict)
-{'Alice': {'Major': 'Math', 'Grade': 4.0}, 'Bob': {'Major': 'CS', 'Grade': 3.0}}
+{'Alice': {'Math': {'Grade': 4.0}, 'CS': {'Grade': 3.0}}}
 ```
 
 ## Write
 
 Suppose we want to write the above `grade_dict` to a new file *new_example.csv* that looks like this:
 
-    Name,Major,Grade
-    Bob,CS,3.0
+    Name,Subject,Grade
+    Alice,CS,3.0
     Alice,Math,4.0
 
-Define the value line (with `name`, `major`, and `grade` the same as above):
+Define the value line (with `name`, `subject`, and `grade` the same as above):
 
 ```python
->>> value_line = [name, major, grade]
+>>> value_line = [name, subject, grade]
 ```
 
 Define the output file:
