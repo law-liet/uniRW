@@ -67,13 +67,14 @@ class Hierarchy:
         :param hierarchy_spec: an input to be checked.
         :raise some error if hierarchy is not invalid.
         """
+        check = cls.check
         try:
             if type(hierarchy_spec) is list:  # Type 1
                 for value in hierarchy_spec:
                     if not isinstance(value, GeneralValue):
                         # See whether is Type 3 and check next layer
                         _, next_layer = hierarchy_spec
-                        cls.check(next_layer)
+                        check(next_layer)
 
             elif type(hierarchy_spec) is dict:  # Type 2
                 items = list(hierarchy_spec.items())
@@ -81,10 +82,10 @@ class Hierarchy:
                     raise ValueError
                 else:
                     _, next_layer = items[0]
-                    cls.check(next_layer)
+                    check(next_layer)
             else:  # Type 3
                 _, next_layer = hierarchy_spec
-                cls.check(next_layer)
+                check(next_layer)
         except:
             print("Invalid hierarchy specification")
             raise
@@ -105,27 +106,31 @@ class Hierarchy:
             (value hierarchy) after:
                 {'Alice': {'Math': {'Rank': 2, 'Grade': 5.0}}}
         """
-        if type(hierarchy_spec) is list:  # Type 1
+        def apply_post_map(hierarchy_spec, value_hierarchy, state):
+            if type(hierarchy_spec) is list:  # Type 1
 
-            for value in hierarchy_spec:
-                if isinstance(value, GeneralValue):
-                    # Type 1: at the "leaf" of hierarchy
-                    val_name = value.name
-                    val = value.post_map_f(state, value_hierarchy[val_name])
-                    value_hierarchy[val_name] = val
-                else:
-                    # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
-                    val, next_layer = value
-                    cls.apply_post_map(next_layer, value_hierarchy[val], state)
+                for value in hierarchy_spec:
+                    if isinstance(value, GeneralValue):
+                        # Type 1: at the "leaf" of hierarchy
+                        val_name = value.name
+                        val = value.post_map_f(state, value_hierarchy[val_name])
+                        value_hierarchy[val_name] = val
+                    else:
+                        # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
+                        val, next_layer = value
+                        apply_post_map(next_layer, value_hierarchy[val], state)
 
-        elif type(hierarchy_spec) is dict:  # Type 2: at the "node" of hierarchy, go to next hierarchy_spec
-            value, next_layer = list(hierarchy_spec.items())[0]
-            for val, _ in value_hierarchy.items():
-                cls.apply_post_map(next_layer, value_hierarchy[val], state)
+            elif type(hierarchy_spec) is dict:  # Type 2: at the "node" of hierarchy, go to next hierarchy_spec
+                value, next_layer = list(hierarchy_spec.items())[0]
+                for val, _ in value_hierarchy.items():
+                    apply_post_map(next_layer, value_hierarchy[val], state)
 
-        else:  # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
-            val, next_layer = hierarchy_spec
-            cls.apply_post_map(next_layer, value_hierarchy[val], state)
+            else:  # Type 3: at the "node" of hierarchy, go to next hierarchy_spec
+                val, next_layer = hierarchy_spec
+                apply_post_map(next_layer, value_hierarchy[val], state)
+
+        apply_post_map(hierarchy_spec, value_hierarchy, state)
+
 
     @classmethod
     def traverse(cls, hierarchy_spec, line, state, value_hierarchy):
@@ -143,9 +148,37 @@ class Hierarchy:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}}
 
         """
-        if type(hierarchy_spec) is list:  # Type 1
+        merge = cls.merge
+        def traverse(hierarchy_spec, line, state, value_hierarchy):
+            if type(hierarchy_spec) is list:  # Type 1
 
-            for value in hierarchy_spec:
+                for value in hierarchy_spec:
+
+                    if isinstance(value, StateValue):
+                        # get value from state and apply map
+                        val_name = value.name
+                        val = value.map_f(state, state[val_name])
+                    elif isinstance(value, Value):
+                        # get value from line and apply map
+                        val_name = value.name
+                        val = value.map_f(state, line[val_name])
+                    else:
+                        # Type 3: store value and go to next layer
+                        val, next_layer = value
+                        value_hierarchy[val] = {}
+                        traverse(next_layer, line, state, value_hierarchy[val])
+
+                    # if another value is already stored, apply reduce and store the value in dictionary
+                    if val_name in value_hierarchy:
+                        current_val = value_hierarchy[val_name]
+                        reduced_val = value.reduce_f(current_val, val)
+                        value_hierarchy[val_name] = reduced_val
+                    else:
+                        value_hierarchy[val_name] = val
+
+            elif type(hierarchy_spec) is dict:  # Type 2
+
+                value, next_layer = list(hierarchy_spec.items())[0]
 
                 if isinstance(value, StateValue):
                     # get value from state and apply map
@@ -156,51 +189,27 @@ class Hierarchy:
                     val_name = value.name
                     val = value.map_f(state, line[val_name])
                 else:
-                    # Type 3: store value and go to next layer
-                    val, next_layer = value
-                    value_hierarchy[val] = {}
-                    cls.traverse(next_layer, line, state, value_hierarchy[val])
+                    raise ValueError("Invalid hierarchy specification.")
 
-                # if another value is already stored, apply reduce and store the value in dictionary
-                if val_name in value_hierarchy:
-                    current_val = value_hierarchy[val_name]
-                    reduced_val = value.reduce_f(current_val, val)
-                    value_hierarchy[val_name] = reduced_val
+                if val in value_hierarchy:
+                    # if value already stored, go to next layer and merge with current hierarchy
+                    new_hierarchy = {}
+                    traverse(next_layer, line, state, new_hierarchy)
+                    current_hierarchy = value_hierarchy[val]
+                    merged_hierarchy = merge(next_layer, current_hierarchy, new_hierarchy)
+                    value_hierarchy[val] = merged_hierarchy
+
                 else:
-                    value_hierarchy[val_name] = val
+                    # store value and go to next layer
+                    value_hierarchy[val] = {}
+                    traverse(next_layer, line, state, value_hierarchy[val])
 
-        elif type(hierarchy_spec) is dict:  # Type 2
-
-            value, next_layer = list(hierarchy_spec.items())[0]
-
-            if isinstance(value, StateValue):
-                # get value from state and apply map
-                val_name = value.name
-                val = value.map_f(state, state[val_name])
-            elif isinstance(value, Value):
-                # get value from line and apply map
-                val_name = value.name
-                val = value.map_f(state, line[val_name])
-            else:
-                raise ValueError("Invalid hierarchy specification.")
-
-            if val in value_hierarchy:
-                # if value already stored, go to next layer and merge with current hierarchy
-                new_hierarchy = {}
-                cls.traverse(next_layer, line, state, new_hierarchy)
-                current_hierarchy = value_hierarchy[val]
-                merged_hierarchy = cls.merge(next_layer, current_hierarchy, new_hierarchy)
-                value_hierarchy[val] = merged_hierarchy
-
-            else:
-                # store value and go to next layer
+            else:  # Type 3: store value and go to next layer
+                val, next_layer = hierarchy_spec
                 value_hierarchy[val] = {}
-                cls.traverse(next_layer, line, state, value_hierarchy[val])
+                traverse(next_layer, line, state, value_hierarchy[val])
 
-        else:  # Type 3: store value and go to next layer
-            val, next_layer = hierarchy_spec
-            value_hierarchy[val] = {}
-            cls.traverse(next_layer, line, state, value_hierarchy[val])
+        traverse(hierarchy_spec, line, state, value_hierarchy)
 
     @classmethod
     def merge(cls, hierarchy_spec, value_hierarchy1, value_hierarchy2, post=False, state=State({}), top=True):
@@ -233,52 +242,59 @@ class Hierarchy:
                 {'Alice': {'Math': {'Rank': 1, 'Grade': 4.0}}
 
         """
-        if top:  # prevent contamination of the top level input dictionary
-            merged_hierarchy = deepcopy(value_hierarchy1)
-        else:
-            merged_hierarchy = value_hierarchy1.copy()
-        if top and post:  # apply post map at the top level
-            cls.apply_post_map(hierarchy_spec, merged_hierarchy, state)
+        apply_post_map = cls.apply_post_map
 
-        if type(hierarchy_spec) is list:  # Type 1
+        def merge(hierarchy_spec, value_hierarchy1, value_hierarchy2, post, state, top):
 
-            for value in hierarchy_spec:
+            if top:  # prevent contamination of the top level input dictionary
+                merged_hierarchy = deepcopy(value_hierarchy1)
+            else:
+                merged_hierarchy = value_hierarchy1.copy()
+            if top and post:  # apply post map at the top level
+                apply_post_map(hierarchy_spec, merged_hierarchy, state)
 
-                if isinstance(value, GeneralValue):
-                    # apply reduce (or post_map, post_reduce) to "leaf" values
-                    val1 = merged_hierarchy[value.name]
-                    val2 = value_hierarchy2[value.name]
-                    if post:
-                        new_val1 = val1  # already apply post map
-                        new_val2 = value.post_map_f(state, val2)
-                        new_val = value.post_reduce_f(new_val1, new_val2)
+            if type(hierarchy_spec) is list:  # Type 1
+
+                for value in hierarchy_spec:
+
+                    if isinstance(value, GeneralValue):
+                        # apply reduce (or post_map, post_reduce) to "leaf" values
+                        val_name = value.name
+                        val1 = merged_hierarchy[val_name]
+                        val2 = value_hierarchy2[val_name]
+                        if post:
+                            new_val1 = val1  # already apply post map
+                            new_val2 = value.post_map_f(state, val2)
+                            new_val = value.post_reduce_f(new_val1, new_val2)
+                        else:
+                            new_val = value.reduce_f(val1, val2)
+                        merged_hierarchy[val_name] = new_val
+
+                    else:  # Type 3: at "node", merge next layer
+                        val, next_layer = value
+                        merged_hierarchy[val] = \
+                            merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
+
+            elif type(hierarchy_spec) is dict:  # Type 2: at "node", merge every sub-hierarchy
+                _, next_layer = list(hierarchy_spec.items())[0]
+                for val, next_val_layer2 in value_hierarchy2.items():
+                    if val in merged_hierarchy:
+                        next_val_layer1 = merged_hierarchy[val]
+                        merged_hierarchy[val] = \
+                            merge(next_layer, next_val_layer1, next_val_layer2, post, state, False)
                     else:
-                        new_val = value.reduce_f(val1, val2)
-                    merged_hierarchy[value.name] = new_val
+                        if post:
+                            apply_post_map(next_layer, next_val_layer2, state)
+                        merged_hierarchy[val] = next_val_layer2
 
-                else:  # Type 3: at "node", merge next layer
-                    val, next_layer = value
-                    merged_hierarchy[val] = \
-                        cls.merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
+            else:  # Type 3: at "node", merge next layer
+                val, next_layer = hierarchy_spec
+                merged_hierarchy[val] = \
+                    merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
 
-        elif type(hierarchy_spec) is dict:  # Type 2: at "node", merge every sub-hierarchy
-            _, next_layer = list(hierarchy_spec.items())[0]
-            for val, next_val_layer2 in value_hierarchy2.items():
-                if val in merged_hierarchy:
-                    next_val_layer1 = merged_hierarchy[val]
-                    merged_hierarchy[val] = \
-                        cls.merge(next_layer, next_val_layer1, next_val_layer2, post, state, False)
-                else:
-                    if post:
-                        cls.apply_post_map(next_layer, next_val_layer2, state)
-                    merged_hierarchy[val] = next_val_layer2
+            return merged_hierarchy
 
-        else:  # Type 3: at "node", merge next layer
-            val, next_layer = hierarchy_spec
-            merged_hierarchy[val] = \
-                cls.merge(next_layer, merged_hierarchy[val], value_hierarchy2[val], post, state, False)
-
-        return merged_hierarchy
+        return merge(hierarchy_spec, value_hierarchy1, value_hierarchy2, post, state, top)
 
     @classmethod
     def flatten(cls, hierarchy_spec, value_hierarchy):
@@ -305,7 +321,8 @@ class Hierarchy:
                 for value in hierarchy_spec:
                     if isinstance(value, GeneralValue):
                         # at "leaf", store (value name => value) in current value line
-                        current_value_line[value.name] = value_hierarchy[value.name]
+                        val_name = value.name
+                        current_value_line[val_name] = value_hierarchy[val_name]
                     else:  # Type 3: at "node", go to next layer
                         val, next_layer = value
                         flatten_helper(next_layer, value_hierarchy[val], value_lines, current_value_line)
@@ -337,19 +354,27 @@ class Hierarchy:
         :return: the result dictionary
         """
         value_hierarchy = {}
+        traverse = cls.traverse
+
+        release = state.release
+        update = state.update
+        lock = state.lock
+
+        def update_state(line):
+            release()
+            update(line)
+            lock()
 
         for line in value_lines:
 
             # update state
-            state.release()
-            state.update(line)
-            state.lock()
+            update_state(line)
 
             # filter out a line if predicate returns false
             if not filter_f(state, line):
                 continue
 
             # traverse a line with respect to hierarchy
-            cls.traverse(hierarchy_spec, line, state, value_hierarchy)
+            traverse(hierarchy_spec, line, state, value_hierarchy)
 
         return value_hierarchy

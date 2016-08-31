@@ -69,41 +69,63 @@ class HReader:
         else:
             current_state = self.state
 
-        with open(data_file.file_name, mode) as file:
+        filter_f = self.filter_f
+        hierarchy_spec = self.hierarchy_spec
 
-            for line in file:
+        file_name = data_file.file_name
+        line = data_file.line
+        header_lineno = data_file.header_lineno
+
+        store_line = line.store
+        set_line_header = line.set_header
+
+        release = current_state.release
+        update = current_state.update
+        lock = current_state.lock
+
+        traverse = Hierarchy.traverse
+
+        def update_state(line):
+            release()
+            update(line)
+            lock()
+
+        with open(file_name, mode) as file:
+
+            for data_line in file:
                 try:
                     # read a line
-                    data_file.line.store(line[:-1])
+                    store_line(data_line[:-1])
 
                     # set header if header line number matches
-                    if data_file.header_lineno == lineno:
-                        data_file.line.set_header()
+                    if header_lineno == lineno:
+                        set_line_header()
                         lineno += 1
                         continue
 
                     # update state
-                    current_state.release()
-                    current_state.update(data_file.line)
-                    current_state.lock()
+                    # current_state.release()
+                    # current_state.update(line)
+                    # current_state.lock()
+                    update_state(line)
 
                     # filter out a line if predicate returns false
-                    if not self.filter_f(current_state, data_file.line):
+                    if not filter_f(current_state, line):
                         lineno += 1
                         continue
 
                     # traverse a line with respect to hierarchy
-                    Hierarchy.traverse(self.hierarchy_spec, data_file.line, current_state, value_hierarchy)
+                    traverse(hierarchy_spec, line, current_state, value_hierarchy)
 
                 except (KeyError, ValueError):
-                    print("Error occurred when reading line" + str(lineno+1) + " of " + data_file.file_name)
+                    print("Error occurred when reading line %s of %s" % (str(lineno+1), file_name))
                     raise
 
                 lineno += 1
 
         # apply post_map_f in each value if apply_post_map is true
         if apply_post_map:
-            Hierarchy.apply_post_map(self.hierarchy_spec, value_hierarchy, current_state)
+            Hierarchy.apply_post_map(hierarchy_spec, value_hierarchy, current_state)
 
         return value_hierarchy, current_state
 
@@ -115,11 +137,14 @@ class HReader:
         """
         final_value_hierarchy = {}
 
+        merge = Hierarchy.merge
+        read = self.read
+        hierarchy_spec = self.hierarchy_spec
         # read each file and merge the result dictionary
         for data_file in data_files:
-            value_hierarchy, final_state = self.read(data_file, mode, carry_state)
+            value_hierarchy, final_state = read(data_file, mode, carry_state)
             final_value_hierarchy = \
-                Hierarchy.merge(self.hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state, False)
+                merge(hierarchy_spec, final_value_hierarchy, value_hierarchy, True, final_state, False)
 
         return final_value_hierarchy
 

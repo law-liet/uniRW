@@ -37,6 +37,10 @@ class HWriter:
     def write_lines(self, out_file, value_lines, mode, sort_by, reverse):
         """Write a file according to value specification, with a flatten value hierarchy.
         """
+        value_line = self.value_line
+        output_line = out_file.line
+        get_output_line = output_line.get_line
+
         output = open(out_file.file_name, mode)
 
         # print foreword
@@ -45,9 +49,9 @@ class HWriter:
 
         # print header
         if out_file.header:
-            header_line = out_file.line.get_line(out_file.header)
+            header_line = get_output_line(out_file.header)
         else:
-            header_line = out_file.line.get_line([value.name for value in self.value_line])
+            header_line = get_output_line([value.name for value in value_line])
         print(header_line, file=output, end='')
 
         # sort the lines
@@ -59,9 +63,9 @@ class HWriter:
         # print value with respect to value line specification
         for line in sorted_lines:
             values = []
-            for value in self.value_line:
+            for value in value_line:
                 values.append(value.to_string(line[value.name]))
-            print(out_file.line.get_line(values), file=output, end='')
+            print(get_output_line(values), file=output, end='')
 
         # print the epilogue
         for epilogue_line in out_file.epilogue:
