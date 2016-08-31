@@ -23,8 +23,9 @@ class Line:
         return name in self.name_col_dict
 
     def get_by_name(self, name):
-        if name in self.name_col_dict:
-            return self.__line[self.name_col_dict[name]]
+        name_col_dict = self.name_col_dict
+        if name in name_col_dict:
+            return self.__line[name_col_dict[name]]
         else:
             raise KeyError(str(name) + " is not in a data line")
 
@@ -41,11 +42,12 @@ class Line:
     def set_header(self):
         """Make the name => column dictionary from current stored values by indexing.
         """
+        name_col_dict = self.name_col_dict
         for i, val in enumerate(self.__line):
-            if val in self.name_col_dict:
+            if val in name_col_dict:
                 continue
             else:
-                self.name_col_dict[val] = i
+                name_col_dict[val] = i
 
     def clear(self):
         self.name_col_dict = {}
