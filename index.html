@@ -64,17 +64,18 @@
 <h2>
 <a id="read" class="anchor" href="#read" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Read</h2>
 
-<p>Suppose we want to read a file named <em>example.csv</em> that looks like this:</p>
+<p>Suppose we want to read the following file named <em>example.csv</em> into a dictionary of maximum grades of different subjects:</p>
 
 <pre><code>Name,Subject,Grade
 Alice,Math,4.0
 Alice,CS,3.0
+Alice,Math,3.8
 </code></pre>
 
 <p>Define the value structures and hierarchy:</p>
 
 <div class="highlight highlight-source-python"><pre><span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> name, subject <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Name<span class="pl-pds">'</span></span>), <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Subject<span class="pl-pds">'</span></span>)
-<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>, <span class="pl-v">map_f</span><span class="pl-k">=</span><span class="pl-k">lambda</span> <span class="pl-smi">_</span>, <span class="pl-smi">x</span>: <span class="pl-c1">float</span>(x))
+<span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> grade <span class="pl-k">=</span> <span class="pl-c1">RW</span>.Value(<span class="pl-s"><span class="pl-pds">'</span>Grade<span class="pl-pds">'</span></span>, <span class="pl-v">map_f</span><span class="pl-k">=</span><span class="pl-k">lambda</span> <span class="pl-smi">_</span>, <span class="pl-smi">x</span>: <span class="pl-c1">float</span>(x), <span class="pl-v">reduce_f</span><span class="pl-k">=</span><span class="pl-c1">max</span>)
 <span class="pl-k">&gt;&gt;</span><span class="pl-k">&gt;</span> hierarchy <span class="pl-k">=</span> {name: {subject: [grade]}}</pre></div>
 
 <p>Define the input file:</p>
