@@ -23,17 +23,18 @@ Import the package:
 
 ## Read
 
-Suppose we want to read a file named *example.csv* that looks like this:
+Suppose we want to read the following file named *example.csv* into a dictionary of maximum grades of different subjects:
 
     Name,Subject,Grade
     Alice,Math,4.0
     Alice,CS,3.0
+    Alice,Math,3.8
 
 Define the value structures and hierarchy:
 
 ``` python
 >>> name, subject = RW.Value('Name'), RW.Value('Subject')
->>> grade = RW.Value('Grade', map_f=lambda _, x: float(x))
+>>> grade = RW.Value('Grade', map_f=lambda _, x: float(x), reduce_f=max)
 >>> hierarchy = {name: {subject: [grade]}}
 ```
 
